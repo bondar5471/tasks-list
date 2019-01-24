@@ -1,11 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+
 
 import AppHeader from '../app-header';
 import SearchPanel from '../search-panel'
 import TaskList from '../task-list'
 import ItemStatusFilter from '../item-status-filter'
-
 import './app.css';
 
 const App = () => {
