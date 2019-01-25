@@ -1,0 +1,14 @@
+.item-add-form {
+  margin-top: 15px;
+}
+
+.item-add-form input {
+  margin-right: 5px;
+}
+.couter {
+  margin: 2px;
+  background-color: rgb(183, 240, 241);
+  padding-top: 5px;
+  border-radius: 5px;
+  color: silver;
+}
