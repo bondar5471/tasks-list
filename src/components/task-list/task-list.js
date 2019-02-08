@@ -1,4 +1,6 @@
 import React, {Component} from 'react'
+import SearchPanel from '../search-panel'
+import TaskDurationFilter from '../task-duration-filter'
 import axios from 'axios'
 import moment from 'moment'
 
@@ -9,11 +11,10 @@ export default class TaskList extends Component {
     super(props)
     this.state = {
       tasks: [],
-      editingTaskId: null
-
+      term: '',
+      filter: 'all'
     }
     this.removeTask = this.removeTask.bind(this)
-    this.editTask = this.editTask.bind(this)
   }
   
   removeTask(id) {
@@ -29,25 +30,6 @@ export default class TaskList extends Component {
     .catch(error => console.log(error))
   }
 
-  editTask(id, list, date_end, duration) {
-    const dayId = 1
-    axios.put(`http://localhost:3000/api/v1/days/${dayId}/tasks`+ id, {
-      task: {
-        list, date_end, duration
-      }
-    })
-    .then(response => {
-      console.log(response)
-      const task = this.state.tasks;
-      task[id-1] = {id, list, date_end, duration}
-      this.setState(()=> ({
-        task,
-        editingTaskId: null
-      }))
-    })
-    .catch(error=> console.log(error))
-  }
-
   componentDidMount() {
     const id = 1;
     
@@ -57,38 +39,63 @@ export default class TaskList extends Component {
         this.setState({tasks})
       })
   }
+
+  search(tasks, term) {
+    if(term.length === 0) {
+      return tasks
+    }
+    return tasks.filter((task) =>{
+      return task.list
+       .toLowerCase()
+       .indexOf(term.toLowerCase()) > -1
+    })
+  }
+  onSearchChange = (term) => {
+    this.setState({term})
+  }
+  onFilterChange = (filter) => {
+    this.setState({filter})
+  }
+
+  filter(tasks, filter) {
+    switch(filter) {
+      case 'all':
+        return tasks
+      case 'day':
+        return this.state.tasks.filter((task)=> task.duration === 'day');
+      case 'week': 
+        return this.state.tasks.filter((task)=> task.duration === 'week');
+      case 'month': 
+        return this.state.tasks.filter((task)=> task.duration === 'month'); 
+      case 'year': 
+        return this.state.tasks.filter((task)=> task.duration === 'year');
+      default:
+        return tasks       
+    }
+  }
   render() {
+    const {tasks, term, filter} = this.state
+    const visibleItem = this.filter(this.search(tasks, term),filter)
+    console.log(visibleItem)
     return (
-    <div> 
-      {this.state.tasks.map(task => {
-        if (this.state.editingTaskId === task.id) {
+    <div>
+       <TaskDurationFilter 
+       filter={filter}
+       onFilterChange={this.onFilterChange}/> 
+      <SearchPanel 
+        onSearchChange={this.onSearchChange}
+      />
+      {visibleItem.map(task => {
         return(
          <div key={task.id}>
-          <li className="list-group-item" >{task.list}
+          <li className="list-group-item" >{task.list},({task.duration})
             <span className="date-task">{moment(task.date_end).format("ll")}
-            <button className="btn btn-warning"
-                    onClick={()=> this.editTask(task.id)}><i className="fa fa-pencil-square"></i></button>
             <button className="btm btn-danger"
                     onClick ={()=>this.removeTask(task.id) }
-                    editingTaskId={this.editingTaskId}
             ><i className="fa fa-trash"></i></button>
             </span>
           </li>
-        </div>)}
-        else {
-          return(
-            <div key={task.id}>
-             <li className="list-group-item" >{task.list}
-               <span className="date-task">{moment(task.date_end).format("ll")}
-               <button className="btn btn-warning"
-                    onClick={()=> this.editTask(task.id)}><i className="fa fa-pencil-square"></i></button>
-               <button className="btm btn-danger"
-                       onClick ={()=>this.removeTask(task.id) }
-               ><i className="fa fa-trash"></i></button>
-               </span>
-             </li>
-           </div>)
-        }
+        </div>)
       })}
     </div>   
     )}

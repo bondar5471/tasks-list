@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 
 import TaskList from '../task-list'
-import AppHeader from '../app-header'
 import FormAddTask from '../form-add-task'
-import EditTaskForm from '../edit-task-form'
+
 import axios from 'axios'
 
 import './app.css';
@@ -13,11 +12,10 @@ export default class App extends Component {
   constructor (props){
     super(props)
     this.state = {
-      tasks: [],
-      editingTaskId: null
+      tasks: []
     }
     this.addNewTask = this.addNewTask.bind(this)
-    //this.editingTaskId = this.editingTaskId.bind(this)
+    
   }
 
   addNewTask(list, date_end, duration) {
@@ -34,15 +32,11 @@ export default class App extends Component {
          })
   }
 
-
   render() {
     return (
       <div>
-        <AppHeader />
         <TaskList onRemoveList={this.removeList}/>
         <FormAddTask onNewTask={this.addNewTask} />
-        <EditTaskForm onEditTask={this.editTask}/>
-
       </div>)    
   }
 };

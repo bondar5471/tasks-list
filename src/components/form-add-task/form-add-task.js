@@ -1,7 +1,8 @@
 import React from 'react'
 
 import './form-add-task.css'
-const FormAddTask = ({onNewTask = f => f}) => {
+
+const FormAddTask = ({onNewTask = (f) => f}) => {
   let list, date_end, duration
     const submit = e => {
       e.preventDefault()
