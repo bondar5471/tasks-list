@@ -6,6 +6,7 @@ import Spinner from '../spinner'
 import ErrorIndicator from '../error-indicator'
 import axios from 'axios'
 import moment from 'moment'
+import {config} from '../../backgroud/token'
 
 import './task-list.css'
 
@@ -18,14 +19,17 @@ export default class TaskList extends Component {
       filter: 'all',
       loading: true,
       error: false
+      
     }
     this.removeTask = this.removeTask.bind(this)
     this.addNewTask = this.addNewTask.bind(this)
   }
+
    
   addNewTask(list, date_end, duration) {
-    const id = 1
-    axios.post(`http://localhost:3000/api/v1/days/${id}/tasks`,
+    const id = 9126
+    console.log(config)
+    axios.post(`http://localhost:3000/api/days/${id}/tasks`, config,
               {task:{list, date_end, duration}})
          .then(response => {
            const tasks = [...this.state.tasks, response.data]
@@ -37,8 +41,8 @@ export default class TaskList extends Component {
   }
   
   removeTask(id) {
-    const day = 1
-    axios.delete(`http://localhost:3000/api/v1/days/${day}/tasks/`+ id)
+    const day = 9126
+    axios.delete(`http://localhost:3000/api/days/${day}/tasks/`+ id, config)
     .then(response => {
       console.log(response)
       const tasks = this.state.tasks.filter(
@@ -50,9 +54,9 @@ export default class TaskList extends Component {
   }
 
   componentDidMount() {
-    const id = 1;
-    
-    axios.get(`http://localhost:3000/api/v1/days/${id}/tasks`)
+    const id = 9126;
+    console.log(config)
+    axios.get(`http://localhost:3000/api/days/${id}/tasks`, config)
       .then(res => {
         const tasks = res.data;
         this.setState({tasks})

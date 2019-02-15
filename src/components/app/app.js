@@ -11,14 +11,19 @@ import './app.css';
 
 
 export default class App extends Component {
-  state = {}
+  state = {
+    userId: "",
+    userEmail: ""
+  }
+  
 
   componentDidMount() {
     const jwt = localStorage.getItem("token")
-    if(jwt !== undefined){
-      const user = jwtDecode(jwt)
-      return user}
-    console.log(user)
+    const user = jwtDecode(jwt)
+    console.log(jwt)
+    this.setState({
+      userId: user.sub,
+      userEmail: user.email})
   }
    
   render() {

@@ -10,11 +10,21 @@ class DaysContainer extends Component {
 			this.state = {
 					days: []
 			}
-    }
+		}
+		
     componentDidMount() {
-        axios.get('http://localhost:3000/api/v1/days')
+			const token = localStorage.getItem("token")
+
+			let config = {
+				headers: {'Authorization': "bearer " + token}
+		  };
+		
+		  
+        axios.get('http://localhost:3000/api/days',
+				config)
 				
 				.then(response => {
+					console.log(config)
             this.setState({
 								days: response.data
 						})
@@ -28,7 +38,6 @@ class DaysContainer extends Component {
 			})
 		}
     render() {
-			//refactor fix
 			const {days} = this.state
 			let count = 0 
 			  const functionCalculateDateCount = days.map(day=> {

@@ -42,6 +42,7 @@ export default class SignUp extends React.Component {
     }
     Axios.post("http://localhost:3000/user_token", auth).then(function (res) {
       const token = res.data.jwt
+      console.log(token)
       localStorage.setItem('token', token)
     })
     this.props.history.push('/')
