@@ -1,13 +1,31 @@
 import React from 'react';
-import './app-header.css';
 
-const AppHeader = () => {
+import './app-header.css';
+import {Link} from 'react-router-dom'
+
+
+const Header = () => {
   return (
-    <div className="app-header d-flex">
-      <h1>Task List</h1>
-      <h2>{5} more to do, {2} done</h2>
+    <div className="header d-flex">
+      <h3>
+      <Link to="/">Diary</Link>
+      </h3>
+      <ul className="d-flex">
+        <li>
+          <Link to="/days">Days</Link>
+        </li>
+        <li>
+        <Link to="/tasks">Tasks</Link>
+        </li>
+      </ul>
+      <ul className="auth-user d-flex">
+        <li>
+          < Link to="/login">login</Link>
+        </li>
+      </ul>
     </div>
+    
   );
 };
 
-export default AppHeader;
+export default Header;

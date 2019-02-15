@@ -1,12 +1,38 @@
-.app-header {
-  align-items: flex-end;
+.header {
+  margin-top: .5rem;
+  padding-left: 10px;
 }
 
-.app-header h1 {
-  flex-grow: 1;
+.header ul li {
+  list-style: none;
+  margin: 0;
+  padding: .5rem 1rem;
+  border-radius: 3px;
 }
 
-.app-header h2 {
-  font-size: 1.2rem;
-  color: grey;
+.header ul li:hover {
+  background-color: rgb(255, 255, 255);
+}
+
+.header a:hover {
+  text-decoration: none;
+}
+
+.header h3 a {
+  color: white;
+}
+
+.header h3 a:hover {
+  color: #00bc8c;
+}
+
+.header button {
+  height:  2.2rem;
+  text-align: center;
+  margin-top: 3.5px;
+}
+
+.auth-user {
+  margin-left: auto;
+  margin-right: 400px;
 }

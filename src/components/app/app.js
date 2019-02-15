@@ -1,42 +1,48 @@
 import React, { Component } from 'react';
-
 import TaskList from '../task-list'
-import FormAddTask from '../form-add-task'
-
-import axios from 'axios'
-
+import DaysContainer from '../days-container'
+import ErrorBoundtry from '../error-boundtry'
+import Header from '../app-header'
+import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
+import Login from '../login'
+import SignUp from '../sign-up'
+import jwtDecode from 'jwt-decode'
 import './app.css';
 
+
 export default class App extends Component {
-  
-  constructor (props){
-    super(props)
-    this.state = {
-      tasks: []
-    }
-    this.addNewTask = this.addNewTask.bind(this)
-    
-  }
+  state = {}
 
-  addNewTask(list, date_end, duration) {
-    const id = 1
-    axios.post(`http://localhost:3000/api/v1/days/${id}/tasks`,
-              {task:{list, date_end, duration}})
-         .then(response => {
-           console.log(response)
-           const task = [...this.state.tasks, response.data]
-           this.setState({task})
-         })
-         .catch(error => {
-           console.log(error)
-         })
+  componentDidMount() {
+    const jwt = localStorage.getItem("token")
+    if(jwt !== undefined){
+      const user = jwtDecode(jwt)
+      return user}
+    console.log(user)
   }
-
+   
   render() {
     return (
-      <div>
-        <TaskList onRemoveList={this.removeList}/>
-        <FormAddTask onNewTask={this.addNewTask} />
-      </div>)    
+      <div> 
+        <ErrorBoundtry> 
+            <Router>
+              <div>
+                <Header />
+              <Switch>  
+                <Route path="/" 
+                render={()=> <h2> Welocome to Diary</h2>}
+                exact/>
+                <Route path="/login" exact component={Login} />
+                <Route path="/sign_up" exact component={SignUp}/>
+                <Route path="/days" component={DaysContainer} />
+                <Route path="/tasks" component={TaskList} />
+                <Redirect to="/" />
+              </Switch>
+              </div>
+            </Router>
+         
+        </ErrorBoundtry>
+      </div> 
+    )
   }
 };

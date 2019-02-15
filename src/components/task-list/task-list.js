@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
 import SearchPanel from '../search-panel'
 import TaskDurationFilter from '../task-duration-filter'
+import FormAddTask from '../form-add-task'
+import Spinner from '../spinner'
+import ErrorIndicator from '../error-indicator'
 import axios from 'axios'
 import moment from 'moment'
 
@@ -12,9 +15,25 @@ export default class TaskList extends Component {
     this.state = {
       tasks: [],
       term: '',
-      filter: 'all'
+      filter: 'all',
+      loading: true,
+      error: false
     }
     this.removeTask = this.removeTask.bind(this)
+    this.addNewTask = this.addNewTask.bind(this)
+  }
+   
+  addNewTask(list, date_end, duration) {
+    const id = 1
+    axios.post(`http://localhost:3000/api/v1/days/${id}/tasks`,
+              {task:{list, date_end, duration}})
+         .then(response => {
+           const tasks = [...this.state.tasks, response.data]
+           this.setState({tasks})
+         })
+         .catch(error => {
+           console.log(error)
+         })
   }
   
   removeTask(id) {
@@ -50,9 +69,11 @@ export default class TaskList extends Component {
        .indexOf(term.toLowerCase()) > -1
     })
   }
+
   onSearchChange = (term) => {
     this.setState({term})
   }
+
   onFilterChange = (filter) => {
     this.setState({filter})
   }
@@ -73,10 +94,27 @@ export default class TaskList extends Component {
         return tasks       
     }
   }
+  onTaskLoaded = (tasks) => {
+    this.setState({
+      tasks,
+      loading: false,
+      error: false
+    });
+  };
+
+  onError = (error) => {
+    this.setState({
+      error: true,
+      loading: false
+    });
+  };
+
+
   render() {
-    const {tasks, term, filter} = this.state
+    const {tasks, term, filter, loading, error} = this.state
+    const spinner = !loading ? <Spinner /> : null;
+    const errorMessage = error ? <ErrorIndicator/> : null;
     const visibleItem = this.filter(this.search(tasks, term),filter)
-    console.log(visibleItem)
     return (
     <div>
        <TaskDurationFilter 
@@ -85,10 +123,12 @@ export default class TaskList extends Component {
       <SearchPanel 
         onSearchChange={this.onSearchChange}
       />
+      {spinner}
+      {errorMessage}
       {visibleItem.map(task => {
         return(
          <div key={task.id}>
-          <li className="list-group-item" >{task.list},({task.duration})
+          <li className="list-group-item" >{task.list}
             <span className="date-task">{moment(task.date_end).format("ll")}
             <button className="btm btn-danger"
                     onClick ={()=>this.removeTask(task.id) }
@@ -97,6 +137,7 @@ export default class TaskList extends Component {
           </li>
         </div>)
       })}
+        <FormAddTask onNewTask={this.addNewTask} />
     </div>   
     )}
 }

@@ -16,7 +16,7 @@ const FormAddTask = ({onNewTask = (f) => f}) => {
 
       <form className="form-task"
             onSubmit={submit}>
-            
+         <label>Add task:</label>   
          <input type="text"
                 ref={input => list = input}
                 className="form-control"
@@ -24,8 +24,8 @@ const FormAddTask = ({onNewTask = (f) => f}) => {
           />
           <input type="date"
                 ref={input => date_end = input}
-                className="form-control"
-          />
+                className="form-control"/>
+                
           <div className="form-group form-task">
             <label>Duration task:</label>
           <select className="form-control" 

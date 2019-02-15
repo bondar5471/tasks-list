@@ -1,0 +1,14 @@
+.calendar-heatmap {
+  border: 2px #a8a8a8 solid;
+  border-radius: 3px;
+  padding: 4px;
+
+}
+.react-calendar-heatmap .color-scale-1 { fill: #9bfcef; }
+.react-calendar-heatmap .color-scale-2 { fill: #fd4a4a; }
+.react-calendar-heatmap .color-scale-3 { fill: #44a340; }
+
+.calendar {
+  margin-bottom: 20px
+}
+
