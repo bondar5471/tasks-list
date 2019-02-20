@@ -9,8 +9,9 @@ export default class TaskDurationFilter extends Component {
     {name: 'day', label: 'Day'},
     {name: 'week', label: 'Week'},
     {name: 'month', label: 'Month'},
-		{name: 'year', label: 'Year'}
-		
+    {name: 'year', label: 'Year'},
+    {name: 'date', label: 'Date'}
+    	
   ]
 
   render(){

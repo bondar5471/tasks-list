@@ -6,7 +6,6 @@ import Spinner from '../spinner'
 import ErrorIndicator from '../error-indicator'
 import axios from 'axios'
 import moment from 'moment'
-import {config} from '../../backgroud/token'
 
 import './task-list.css'
 
@@ -14,37 +13,52 @@ export default class TaskList extends Component {
   constructor (props){
     super(props)
     this.state = {
+      days: [],
       tasks: [],
       term: '',
       filter: 'all',
       loading: true,
-      error: false
-      
+      error: false,
+      dateTask: '' 
     }
     this.removeTask = this.removeTask.bind(this)
     this.addNewTask = this.addNewTask.bind(this)
   }
-
-   
-  addNewTask(list, date_end, duration) {
-    const id = 9126
-    console.log(config)
-    axios.post(`http://localhost:3000/api/days/${id}/tasks`, config,
-              {task:{list, date_end, duration}})
+  
+  addNewTask(list, date_end, duration) { 
+    const task = {task:{ list, date_end, duration}}
+    const {days} = this.state
+    let day_id
+    const getDayId = days.forEach( day => {
+      if (day.date === task.task.date_end) {
+        day_id = day.id
+      }
+      return (day_id)
+    })
+    const id = day_id
+    const token = localStorage.getItem("token")
+    const config = {
+    headers: {'Authorization': "bearer " + token}
+    };
+    
+    axios.post(`http://localhost:3000/api/days/${id}/tasks`, task, config)
          .then(response => {
            const tasks = [...this.state.tasks, response.data]
            this.setState({tasks})
          })
          .catch(error => {
-           console.log(error)
          })
   }
   
   removeTask(id) {
-    const day = 9126
+    const day = null
+    const token = localStorage.getItem("token")
+
+    const config = {
+    headers: {'Authorization': "bearer " + token}
+    };
     axios.delete(`http://localhost:3000/api/days/${day}/tasks/`+ id, config)
     .then(response => {
-      console.log(response)
       const tasks = this.state.tasks.filter(
         task => task.id !== id
       )
@@ -54,22 +68,33 @@ export default class TaskList extends Component {
   }
 
   componentDidMount() {
-    const id = 9126;
+    const id = this.state.dayId;
+    const token = localStorage.getItem("token")
+    const config = {
+    headers: {'Authorization': "bearer " + token}
+    };
     console.log(config)
     axios.get(`http://localhost:3000/api/days/${id}/tasks`, config)
       .then(res => {
         const tasks = res.data;
         this.setState({tasks})
       })
+        axios.get('http://localhost:3000/api/days', config)		
+				.then(response => {
+					console.log(config)
+            this.setState({
+								days: response.data
+						})
+        })
+      
   }
 
-  search(tasks, term) {
+  search(tasks, term, filter) {
     if(term.length === 0) {
       return tasks
     }
     return tasks.filter((task) =>{
-      return task.list
-       .toLowerCase()
+      return task.list.toLowerCase()
        .indexOf(term.toLowerCase()) > -1
     })
   }
@@ -80,6 +105,12 @@ export default class TaskList extends Component {
 
   onFilterChange = (filter) => {
     this.setState({filter})
+    if (filter === "date") {
+      document.getElementById('dateFilter').style.display = 'block'
+    }
+    else{
+      document.getElementById('dateFilter').style.display = 'none'
+    }
   }
 
   filter(tasks, filter) {
@@ -93,7 +124,9 @@ export default class TaskList extends Component {
       case 'month': 
         return this.state.tasks.filter((task)=> task.duration === 'month'); 
       case 'year': 
-        return this.state.tasks.filter((task)=> task.duration === 'year');
+        return this.state.tasks.filter((task)=> task.duration === 'year'); 
+      case 'date': 
+        return this.state.tasks.filter((task)=> task.date_end === this.state.dateTask);
       default:
         return tasks       
     }
@@ -112,13 +145,15 @@ export default class TaskList extends Component {
       loading: false
     });
   };
-
+  setDate = (e) => {
+    this.setState({dateTask: e.target.value})
+  }
 
   render() {
     const {tasks, term, filter, loading, error} = this.state
     const spinner = !loading ? <Spinner /> : null;
     const errorMessage = error ? <ErrorIndicator/> : null;
-    const visibleItem = this.filter(this.search(tasks, term),filter)
+    const visibleItem = this.search(this.filter(tasks, filter),term)
     return (
     <div>
        <TaskDurationFilter 
@@ -127,6 +162,11 @@ export default class TaskList extends Component {
       <SearchPanel 
         onSearchChange={this.onSearchChange}
       />
+       <label>Select date to search</label>
+       <input type="date"
+                id="dateFilter"
+                onChange={this.setDate}
+                className="form-control dateFilter"/>
       {spinner}
       {errorMessage}
       {visibleItem.map(task => {

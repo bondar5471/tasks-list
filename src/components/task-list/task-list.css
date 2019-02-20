@@ -1,3 +1,6 @@
 .date-task {
   float: right;  
 }
+.dateFilter{
+  display: none;
+}

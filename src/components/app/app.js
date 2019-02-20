@@ -19,11 +19,14 @@ export default class App extends Component {
 
   componentDidMount() {
     const jwt = localStorage.getItem("token")
-    const user = jwtDecode(jwt)
-    console.log(jwt)
-    this.setState({
-      userId: user.sub,
-      userEmail: user.email})
+    if (jwt !== null){
+      const user = jwtDecode(jwt)
+      console.log(jwt)
+      this.setState({
+        userId: user.sub,
+        userEmail: user.email})}
+    else
+      return(<Login/>)  
   }
    
   render() {
@@ -35,7 +38,7 @@ export default class App extends Component {
                 <Header />
               <Switch>  
                 <Route path="/" 
-                render={()=> <h2> Welocome to Diary</h2>}
+                render={()=> <h2> Welocome to Diary {this.state.userEmail}</h2>}
                 exact/>
                 <Route path="/login" exact component={Login} />
                 <Route path="/sign_up" exact component={SignUp}/>
