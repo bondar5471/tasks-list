@@ -4,3 +4,9 @@
 .dateFilter{
   display: none;
 }
+.point {
+  cursor: pointer;
+}
+.finish {
+  text-decoration: line-through
+}

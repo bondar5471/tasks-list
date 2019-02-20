@@ -19,10 +19,11 @@ export default class TaskList extends Component {
       filter: 'all',
       loading: true,
       error: false,
-      dateTask: '' 
+      dateTask: '',
     }
     this.removeTask = this.removeTask.bind(this)
     this.addNewTask = this.addNewTask.bind(this)
+    this.onTaskClick = this.onTaskClick.bind(this)
   }
   
   addNewTask(list, date_end, duration) { 
@@ -53,7 +54,6 @@ export default class TaskList extends Component {
   removeTask(id) {
     const day = null
     const token = localStorage.getItem("token")
-
     const config = {
     headers: {'Authorization': "bearer " + token}
     };
@@ -65,6 +65,38 @@ export default class TaskList extends Component {
       this.setState({tasks})
     })
     .catch(error => console.log(error))
+  }
+
+  onTaskClick(id, status, date_end){
+   let task
+
+   if (status === "in_progress")
+     {task = {task: {status: 'finished'} } }
+   else 
+     {task = {task: {status: 'in_progress'} } }
+   
+     const {days} = this.state
+   let day_id
+   const getDayId = days.forEach( day => {
+     if (day.date === date_end) {
+       day_id = day.id
+     }
+     return (day_id)
+   })
+   const dayId = day_id
+    
+    const token = localStorage.getItem("token")
+    const config = {
+    headers: {'Authorization': "bearer " + token}
+    };
+    
+    axios.put(`http://localhost:3000/api/days/${dayId}/tasks/` + id, task, config)
+         .then(response => {
+           
+         })
+         .catch(error => {
+           console.log(error)
+         })
   }
 
   componentDidMount() {
@@ -89,7 +121,7 @@ export default class TaskList extends Component {
       
   }
 
-  search(tasks, term, filter) {
+  search(tasks, term) {
     if(term.length === 0) {
       return tasks
     }
@@ -172,7 +204,9 @@ export default class TaskList extends Component {
       {visibleItem.map(task => {
         return(
          <div key={task.id}>
-          <li className="list-group-item" >{task.list}
+          <li className={"list-group-item point "  + (task.status === "in_progress" ? ' list-group-item' : ' finish')}
+              onClick={() => this.onTaskClick(task.id, task.status, task.date_end)}
+              >{task.list}
             <span className="date-task">{moment(task.date_end).format("ll")}
             <button className="btm btn-danger"
                     onClick ={()=>this.removeTask(task.id) }
