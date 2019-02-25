@@ -16,6 +16,9 @@ const Header = () => {
         <li>
         <Link to="/tasks">Tasks</Link>
         </li>
+        <li>
+          <Link to="/boards">Boards</Link>
+        </li>
       </ul>
       <ul className="auth-user d-flex">
         <li>

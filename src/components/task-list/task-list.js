@@ -68,22 +68,22 @@ export default class TaskList extends Component {
   }
 
   onTaskClick(id, status, date_end){
-   let task
+    let task
 
-   if (status === "in_progress")
-     {task = {task: {status: 'finished'} } }
-   else 
-     {task = {task: {status: 'in_progress'} } }
-   
-     const {days} = this.state
-   let day_id
-   const getDayId = days.forEach( day => {
-     if (day.date === date_end) {
-       day_id = day.id
-     }
-     return (day_id)
-   })
-   const dayId = day_id
+    if (status === "in_progress")
+      {task = {task: {status: 'finished'} } }
+    else 
+      {task = {task: {status: 'in_progress'} } }
+    
+      const {days} = this.state
+    let day_id
+    const getDayId = days.forEach( day => {
+      if (day.date === date_end) {
+        day_id = day.id
+      }
+      return (day_id)
+    })
+    const dayId = day_id
     
     const token = localStorage.getItem("token")
     const config = {
@@ -92,7 +92,53 @@ export default class TaskList extends Component {
     
     axios.put(`http://localhost:3000/api/days/${dayId}/tasks/` + id, task, config)
          .then(response => {
-           
+           const newTask = response.data;
+           let { tasks } = this.state;
+           tasks.forEach(task => {
+             if (task.id === newTask.id) {
+               task.status = newTask.status;
+             }
+           })
+           this.setState({ tasks })
+         })
+         .catch(error => {
+           console.log(error)
+         })
+  }
+
+  onToggleImportant(id, importance, date_end){
+    let task
+    
+    if (importance === false)
+      {task = {task: {importance: true} } }
+    else 
+      {task = {task: {importance: false} } }
+    
+      const {days} = this.state
+    let day_id
+    const getDayId = days.forEach( day => {
+      if (day.date === date_end) {
+        day_id = day.id
+      }
+      return (day_id)
+    })
+    const dayId = day_id
+    
+    const token = localStorage.getItem("token")
+    const config = {
+    headers: {'Authorization': "bearer " + token}
+    };
+    
+    axios.put(`http://localhost:3000/api/days/${dayId}/tasks/` + id, task, config)
+         .then(response => {
+           const newTask = response.data;
+           let { tasks } = this.state;
+           tasks.forEach(task => {
+             if (task.id === newTask.id) {
+               task.importance = newTask.importance;
+             }
+           })
+           this.setState({ tasks })
          })
          .catch(error => {
            console.log(error)
@@ -191,26 +237,32 @@ export default class TaskList extends Component {
        <TaskDurationFilter 
        filter={filter}
        onFilterChange={this.onFilterChange}/> 
-      <SearchPanel 
-        onSearchChange={this.onSearchChange}
-      />
-       <label>Select date to search</label>
+      <SearchPanel onSearchChange={this.onSearchChange}/>
        <input type="date"
+                autoFocus
                 id="dateFilter"
                 onChange={this.setDate}
-                className="form-control dateFilter"/>
+                className="form-control dateFilter"/>   
       {spinner}
       {errorMessage}
       {visibleItem.map(task => {
         return(
          <div key={task.id}>
-          <li className={"list-group-item point "  + (task.status === "in_progress" ? ' list-group-item' : ' finish')}
-              onClick={() => this.onTaskClick(task.id, task.status, task.date_end)}
-              >{task.list}
+          <li className={"list-group-item point " + (task.importance === false ? '' : 'importance')}>
+             <span
+                onClick={() => this.onTaskClick(task.id, task.status, task.date_end)}
+                className = {task.status === "in_progress" ? '' : 'finish'}>
+                {task.list}</span>
             <span className="date-task">{moment(task.date_end).format("ll")}
-            <button className="btm btn-danger"
-                    onClick ={()=>this.removeTask(task.id) }
-            ><i className="fa fa-trash"></i></button>
+           <button type="button"
+                className="btn btn-outline-success btn-sm float-right"
+                onClick={() => this.onToggleImportant(task.id, task.importance, task.date_end)}
+                >
+              <i className="fa fa-exclamation" />
+            </button>
+            <button className="btn btn-outline-danger btn-sm float-right"
+                    onClick ={()=>this.removeTask(task.id) }>
+                    <i className="fa fa-trash"/></button>
             </span>
           </li>
         </div>)

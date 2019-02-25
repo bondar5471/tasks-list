@@ -10,3 +10,7 @@
 .finish {
   text-decoration: line-through
 }
+.importance {
+  color: rgb(92, 145, 175);
+  text-decoration: underline wavy
+}

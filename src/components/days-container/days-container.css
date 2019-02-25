@@ -11,6 +11,9 @@
 .calendar {
   margin-bottom: 20px
 }
-.successfulDay{
-  margin-left: 18px
+.successfulCheck{
+  margin-left: 18px;
+}
+.successfulCheck:focus {
+  outline:0px solid white;
 }

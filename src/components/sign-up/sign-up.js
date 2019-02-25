@@ -30,6 +30,7 @@ export default class SignUp extends React.Component {
     Axios.post("http://localhost:3000/api/users", data)
     .then(function (response) {
       const user = response.data
+      console.log(user)
     }).catch(function (error){
       if (error.response && error.response.status === 422) {
           alert("User with such emails exist")

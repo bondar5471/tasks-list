@@ -4,11 +4,10 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import ReactTooltip from 'react-tooltip'
 import { Button, FormGroup, FormControl } from "react-bootstrap";
 import Modal from 'react-modal';
-import moment from 'moment';
-
+import moment from 'moment'
 import './days-container.css'
 import 'react-calendar-heatmap/dist/styles.css';
-import { FormCheck } from 'react-bootstrap';
+
 
 const customStyles = {
   content : {
@@ -20,7 +19,7 @@ const customStyles = {
     transform             : 'translate(-50%, -50%)'
   }
 };
-Modal.setAppElement(DaysContainer)
+Modal.setAppElement('body')
 
 class DaysContainer extends Component {
     constructor(props){
@@ -37,6 +36,7 @@ class DaysContainer extends Component {
 			this.afterOpenModal = this.afterOpenModal.bind(this);
 			this.closeModal = this.closeModal.bind(this);
 		}
+		
     componentDidMount() {
 			const token = localStorage.getItem("token")
 
@@ -96,6 +96,7 @@ class DaysContainer extends Component {
 			await axios.put(`http://localhost:3000/api/days/${idDay}`, data, config)
 			.then(function (response) {
 				const day = response.data
+				console.log(day)
 			}).catch(function (error){
 					alert(error.message)
 			})
@@ -165,13 +166,16 @@ class DaysContainer extends Component {
 												onChange={this.setReport}
 												/>
 										</FormGroup>
-										<label>successful day:</label>
+										
 										<FormGroup>
-											<FormCheck 
-											type="checkbox"
-											className="successfulDay"
-											onChange={this.setSuccessfull}
-											 />
+										<label className="successfulLabel">
+											<input 
+											  type="checkbox"
+											  className="successfulCheck"
+											  onChange={this.setSuccessfull}>
+											 </input>
+											successful day
+										</label>	 
 										</FormGroup>
 										<Button
 											block
