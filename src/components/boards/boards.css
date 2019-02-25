@@ -1,0 +1,7 @@
+.taskTransform {
+  transform: rotate(15deg);
+}
+
+.taskDef {
+  transform: rotate(0deg);
+}
