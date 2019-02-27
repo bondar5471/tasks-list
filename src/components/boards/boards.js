@@ -32,39 +32,57 @@ export default class Boards extends React.Component {
   addList(params) {
     const data = {name: params.title}
     axios.post('http://localhost:3000/api/lists',data)
+    .then(response => {
+      const list = [...this.state.lanes, response.data]
+      this.setState({lanes: list })
+    })
   }
-
   deleteLane(laneId){
-    //TO DO
     axios.delete(`http://localhost:3000/api/lists/${laneId}`)
-  }
+    .then(response => {
+      const lanes = this.state.lanes.filter(
+        lane => lane.id !== laneId
+      )
+      this.setState({lanes})
+    })
+    .catch(error => console.log(error))
 
+  }
   addCard(card, laneId) {
     const data = {
       card: {...card,list_id: laneId}
     }
     axios.post(`http://localhost:3000/api/cards`,data)
+    .then(response => {
+      const list = [...this.state.lanes.cards, response.data]
+      this.setState({lanes: list })
+    })
   }
-
   deleteCard(cardId){
     axios.delete(`http://localhost:3000/api/cards/${cardId}`)
-    
+    .then(response => {
+      const cards = this.state.lanes.cards.filter(
+        card => card.id !== cardId
+      )
+      this.setState({lanes: cards})
+    })
+    .catch(error => console.log(error))
   }
 
-  cardDragg(cardId, targetLaneId, position) {
-     const data = {cardId, 
+  cardDragg(cardId, sourceLaneId, targetLaneId, position, cardDetails) {
+    debugger 
+    const data = {cardId, 
+                   cardDetails,
                    list_id: targetLaneId, 
                    position}
     axios.patch(`http://localhost:3000/api/cards/${cardId}/move`,data)
   }
 
-  lineDragg(listId ,newPosition, payload) {
+  lineDragg(laneId, newPosition, payload) {
     let id = payload.id
-    
-    const data = {position: newPosition + 1, id: id}   //plus 1 lib position begin 0         
+    const data = {position: newPosition + 1}            
    axios.patch(`http://localhost:3000/api/lists/${id}/move`,data)
  }
- 
  
   render() {
     const {lanes} = this.state
@@ -73,7 +91,6 @@ export default class Boards extends React.Component {
                   draggable
                   editable
                   canAddLanes
-                  collapsibleLanes
                   onLaneAdd={this.addList}
                   onCardAdd={this.addCard}
                   onCardDelete={this.deleteCard}
