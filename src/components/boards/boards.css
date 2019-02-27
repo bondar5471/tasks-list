@@ -1,7 +1,9 @@
-.taskTransform {
-  transform: rotate(15deg);
+.react-trello-board {
+  background-color: rgb(245, 244, 244);
+  border: 2px solid rgb(70, 70, 70);
+  border-radius: 6px;
+  color: rgb(0, 0, 0)
 }
-
-.taskDef {
-  transform: rotate(0deg);
+.hQTJYT {
+  visibility: hidden;
 }

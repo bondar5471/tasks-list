@@ -1,123 +1,86 @@
-import React, { Component } from 'react'
-import initialData from '../boards/initial-data'
-import styled from 'styled-components'
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import Column from '../boards/column'
-
-const Container = styled.div`
-  display: flex;
-`;
-
-export default class Boards extends Component {
-  state = initialData
- 
-  onDragEnd = result => {
-    document.body.style.color = 'inherit';
-    const {destination, source, draggableId, type} = result;
-    if(!destination) {
-      return
+import React from 'react'
+import Board from 'react-trello'
+import axios from 'axios'
+import './boards.css'
+export default class Boards extends React.Component {
+  
+  constructor (props){
+    super(props)
+    this.state = {
+      lanes: []
     }
-
-    if(
-      destination.dropableId === source.dropableId &&
-      destination.index === source.index
-    )
-    {
-      return
-    }
-
-    if (type === 'column') {
-      const newColumnOrder = Array.from(this.state.columnOrder);
-      newColumnOrder.splice(source.index, 1)
-      newColumnOrder.splice(destination.index, 0, draggableId)
-
-      const newState = {
-        ...this.state,
-        columnOrder: newColumnOrder
-      }
-      this.setState(newState)
-      return
-    }
-
-    const start = this.state.columns[source.droppableId]
-    const finish = this.state.columns[destination.droppableId]
-    
-    if(start === finish) {
-      debugger
-      const newTaskIds = Array.from(start.taskIds)
-      newTaskIds.splice(source.index, 1)
-      newTaskIds.splice(destination.index, 0, draggableId)
-      
-      const newColumn ={
-        ...start,
-        taskIds: newTaskIds,
-
-      }
-
-      const newState = {
-        ...this.state,
-        columns: {
-          ...this.state.columns,
-          [newColumn.id]: newColumn,
-        }
-      }
-      this.setState(newState)
-      return;
-      } 
-    // Moving from one list to another
-    const startTaskIds = Array.from(start.taskIds)
-    startTaskIds.splice(source.index, 1)
-    const newStart = {
-      ...start,
-      taskIds: startTaskIds
-    }; 
-
-    const finishTaskIds = Array.from(finish.taskIds) 
-    finishTaskIds.splice(destination.index, 0, draggableId)
-    const newFinish ={
-      ...finish,
-      taskIds: finishTaskIds
-    }
-
-    const newState = {
-      ...this.state,
-      columns: {
-        ...this.state.columns,
-        [newStart.id]: newStart,
-        [newFinish.id]: newFinish
-      },
-    }
-    this.setState(newState)
+  }
+  
+  componentDidMount() {
+    axios.get('http://localhost:3000/api/lists').then(response => {
+    this.setState({
+      lanes: response.data.map(this._transformData)
+    })  
+    console.log(this.state.lanes)
+  })
+  .catch(error => console.log(error))
   }
 
-  render() {
-    return( 
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <Droppable
-          droppableId="all-columns"
-          direction="horizontal"
-          type="column">
-          {(provided) => (
-            <Container
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-            {this.state.columnOrder.map((columnId, index) =>{
-            const column = this.state.columns[columnId]
-            const tasks = column.taskIds.map(taskId => this.state.tasks[taskId])
+  _transformData = (list) => {
+    return {
+      id: list.id,
+      title: list.name,
+      cards: list.cards
+    };
+  };
 
-            return ( <Column 
-                      key={column.id} 
-                      column={column} 
-                      tasks={tasks} 
-                      index={index}
-                    />)
-            })}
-             {provided.placeholder}
-          </Container>
-          )}
-        </Droppable>
-      </DragDropContext>
-    )
+  addList(params) {
+    const data = {name: params.title}
+    axios.post('http://localhost:3000/api/lists',data)
+  }
+
+  deleteLane(laneId){
+    //TO DO
+    axios.delete(`http://localhost:3000/api/lists/${laneId}`)
+  }
+
+  addCard(card, laneId) {
+    const data = {
+      card: {...card,list_id: laneId}
+    }
+    axios.post(`http://localhost:3000/api/cards`,data)
+  }
+
+  deleteCard(cardId){
+    axios.delete(`http://localhost:3000/api/cards/${cardId}`)
+    
+  }
+
+  cardDragg(cardId, targetLaneId, position) {
+     const data = {cardId, 
+                   list_id: targetLaneId, 
+                   position}
+    axios.patch(`http://localhost:3000/api/cards/${cardId}/move`,data)
+  }
+
+  lineDragg(listId ,newPosition, payload) {
+    let id = payload.id
+    
+    const data = {position: newPosition + 1, id: id}   //plus 1 lib position begin 0         
+   axios.patch(`http://localhost:3000/api/lists/${id}/move`,data)
+ }
+ 
+ 
+  render() {
+    const {lanes} = this.state
+
+    return <Board data={{lanes}} 
+                  draggable
+                  editable
+                  canAddLanes
+                  collapsibleLanes
+                  onLaneAdd={this.addList}
+                  onCardAdd={this.addCard}
+                  onCardDelete={this.deleteCard}
+                  removeLane={this.deleteLane}
+                  handleDragEnd={this.cardDragg}
+                  handleLaneDragEnd={this.lineDragg}
+                  />          
   }
 }
+
