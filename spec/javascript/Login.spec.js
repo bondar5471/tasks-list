@@ -8,5 +8,4 @@ it('renders without crashing', () => {
     const Log = renderer.create(
         <Router><Login /></Router>).toJSON()
     expect(Log).toMatchSnapshot();
-
 });

@@ -11,7 +11,6 @@ describe('Task #1 Task form component', () => {
         shallow(<FormAddTask />);
     });
 });
-
 it('renders without crashing', () => {
     const FormTask = renderer.create(<FormAddTask />).toJSON()
     expect(FormTask).toMatchSnapshot();
@@ -71,5 +70,4 @@ describe("Task #2 - add task", () => {
         expect(addTaskButton.length).toEqual(1);
         expect(component).toMatchSnapshot();
     });
-});
-
+})
