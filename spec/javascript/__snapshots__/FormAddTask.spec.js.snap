@@ -1,0 +1,900 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Task #2 - add task is possible to add task 1`] = `
+ReactWrapper {
+  Symbol(enzyme.__unrendered__): <FormAddTask />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {},
+    "ref": null,
+    "rendered": Object {
+      "instance": <form
+        class="form-task"
+      >
+        <label>
+          Add task:
+        </label>
+        <input
+          class="form-control task"
+          id="task"
+          placeholder="Enter task"
+          type="text"
+        />
+        <input
+          class="form-control date"
+          id="date"
+          type="date"
+        />
+        <div
+          class="form-group form-task"
+        >
+          <label>
+            Duration task:
+          </label>
+          <select
+            class="form-control"
+            id="sel1"
+          >
+            <option>
+              day
+            </option>
+            <option>
+              week
+            </option>
+            <option>
+              month
+            </option>
+            <option>
+              year
+            </option>
+          </select>
+        </div>
+        <div
+          class="form-group"
+        >
+          <button
+            class="btn btn-success"
+            id="addTask"
+          >
+            Add task
+          </button>
+        </div>
+      </form>,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <label>
+            Add task:
+          </label>,
+          <input
+            className="form-control task"
+            id="task"
+            placeholder="Enter task"
+            type="text"
+          />,
+          <input
+            className="form-control date"
+            id="date"
+            type="date"
+          />,
+          <div
+            className="form-group form-task"
+          >
+            <label>
+              Duration task:
+            </label>
+            <select
+              className="form-control"
+              id="sel1"
+              onChange={[Function]}
+            >
+              <option>
+                day
+              </option>
+              <option>
+                week
+              </option>
+              <option>
+                month
+              </option>
+              <option>
+                year
+              </option>
+            </select>
+          </div>,
+          <div
+            className="form-group"
+          >
+            <button
+              className="btn btn-success"
+              id="addTask"
+            >
+              Add task
+            </button>
+          </div>,
+        ],
+        "className": "form-task",
+        "onSubmit": [Function],
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": <label>
+            Add task:
+          </label>,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Add task:",
+          },
+          "ref": null,
+          "rendered": Array [
+            "Add task:",
+          ],
+          "type": "label",
+        },
+        Object {
+          "instance": <input
+            class="form-control task"
+            id="task"
+            placeholder="Enter task"
+            type="text"
+          />,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "className": "form-control task",
+            "id": "task",
+            "placeholder": "Enter task",
+            "type": "text",
+          },
+          "ref": [Function],
+          "rendered": Array [
+            undefined,
+          ],
+          "type": "input",
+        },
+        Object {
+          "instance": <input
+            class="form-control date"
+            id="date"
+            type="date"
+          />,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "className": "form-control date",
+            "id": "date",
+            "type": "date",
+          },
+          "ref": [Function],
+          "rendered": Array [
+            undefined,
+          ],
+          "type": "input",
+        },
+        Object {
+          "instance": <div
+            class="form-group form-task"
+          >
+            <label>
+              Duration task:
+            </label>
+            <select
+              class="form-control"
+              id="sel1"
+            >
+              <option>
+                day
+              </option>
+              <option>
+                week
+              </option>
+              <option>
+                month
+              </option>
+              <option>
+                year
+              </option>
+            </select>
+          </div>,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <label>
+                Duration task:
+              </label>,
+              <select
+                className="form-control"
+                id="sel1"
+                onChange={[Function]}
+              >
+                <option>
+                  day
+                </option>
+                <option>
+                  week
+                </option>
+                <option>
+                  month
+                </option>
+                <option>
+                  year
+                </option>
+              </select>,
+            ],
+            "className": "form-group form-task",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": <label>
+                Duration task:
+              </label>,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Duration task:",
+              },
+              "ref": null,
+              "rendered": Array [
+                "Duration task:",
+              ],
+              "type": "label",
+            },
+            Object {
+              "instance": <select
+                class="form-control"
+                id="sel1"
+              >
+                <option>
+                  day
+                </option>
+                <option>
+                  week
+                </option>
+                <option>
+                  month
+                </option>
+                <option>
+                  year
+                </option>
+              </select>,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <option>
+                    day
+                  </option>,
+                  <option>
+                    week
+                  </option>,
+                  <option>
+                    month
+                  </option>,
+                  <option>
+                    year
+                  </option>,
+                ],
+                "className": "form-control",
+                "id": "sel1",
+                "onChange": [Function],
+              },
+              "ref": [Function],
+              "rendered": Array [
+                Object {
+                  "instance": <option>
+                    day
+                  </option>,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "day",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "day",
+                  ],
+                  "type": "option",
+                },
+                Object {
+                  "instance": <option>
+                    week
+                  </option>,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "week",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "week",
+                  ],
+                  "type": "option",
+                },
+                Object {
+                  "instance": <option>
+                    month
+                  </option>,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "month",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "month",
+                  ],
+                  "type": "option",
+                },
+                Object {
+                  "instance": <option>
+                    year
+                  </option>,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "year",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "year",
+                  ],
+                  "type": "option",
+                },
+              ],
+              "type": "select",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": <div
+            class="form-group"
+          >
+            <button
+              class="btn btn-success"
+              id="addTask"
+            >
+              Add task
+            </button>
+          </div>,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <button
+              className="btn btn-success"
+              id="addTask"
+            >
+              Add task
+            </button>,
+            "className": "form-group",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": <button
+                class="btn btn-success"
+                id="addTask"
+              >
+                Add task
+              </button>,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Add task",
+                "className": "btn btn-success",
+                "id": "addTask",
+              },
+              "ref": null,
+              "rendered": Array [
+                "Add task",
+              ],
+              "type": "button",
+            },
+          ],
+          "type": "div",
+        },
+      ],
+      "type": "form",
+    },
+    "type": [Function],
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {},
+      "ref": null,
+      "rendered": Object {
+        "instance": <form
+          class="form-task"
+        >
+          <label>
+            Add task:
+          </label>
+          <input
+            class="form-control task"
+            id="task"
+            placeholder="Enter task"
+            type="text"
+          />
+          <input
+            class="form-control date"
+            id="date"
+            type="date"
+          />
+          <div
+            class="form-group form-task"
+          >
+            <label>
+              Duration task:
+            </label>
+            <select
+              class="form-control"
+              id="sel1"
+            >
+              <option>
+                day
+              </option>
+              <option>
+                week
+              </option>
+              <option>
+                month
+              </option>
+              <option>
+                year
+              </option>
+            </select>
+          </div>
+          <div
+            class="form-group"
+          >
+            <button
+              class="btn btn-success"
+              id="addTask"
+            >
+              Add task
+            </button>
+          </div>
+        </form>,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <label>
+              Add task:
+            </label>,
+            <input
+              className="form-control task"
+              id="task"
+              placeholder="Enter task"
+              type="text"
+            />,
+            <input
+              className="form-control date"
+              id="date"
+              type="date"
+            />,
+            <div
+              className="form-group form-task"
+            >
+              <label>
+                Duration task:
+              </label>
+              <select
+                className="form-control"
+                id="sel1"
+                onChange={[Function]}
+              >
+                <option>
+                  day
+                </option>
+                <option>
+                  week
+                </option>
+                <option>
+                  month
+                </option>
+                <option>
+                  year
+                </option>
+              </select>
+            </div>,
+            <div
+              className="form-group"
+            >
+              <button
+                className="btn btn-success"
+                id="addTask"
+              >
+                Add task
+              </button>
+            </div>,
+          ],
+          "className": "form-task",
+          "onSubmit": [Function],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": <label>
+              Add task:
+            </label>,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Add task:",
+            },
+            "ref": null,
+            "rendered": Array [
+              "Add task:",
+            ],
+            "type": "label",
+          },
+          Object {
+            "instance": <input
+              class="form-control task"
+              id="task"
+              placeholder="Enter task"
+              type="text"
+            />,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "className": "form-control task",
+              "id": "task",
+              "placeholder": "Enter task",
+              "type": "text",
+            },
+            "ref": [Function],
+            "rendered": Array [
+              undefined,
+            ],
+            "type": "input",
+          },
+          Object {
+            "instance": <input
+              class="form-control date"
+              id="date"
+              type="date"
+            />,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "className": "form-control date",
+              "id": "date",
+              "type": "date",
+            },
+            "ref": [Function],
+            "rendered": Array [
+              undefined,
+            ],
+            "type": "input",
+          },
+          Object {
+            "instance": <div
+              class="form-group form-task"
+            >
+              <label>
+                Duration task:
+              </label>
+              <select
+                class="form-control"
+                id="sel1"
+              >
+                <option>
+                  day
+                </option>
+                <option>
+                  week
+                </option>
+                <option>
+                  month
+                </option>
+                <option>
+                  year
+                </option>
+              </select>
+            </div>,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <label>
+                  Duration task:
+                </label>,
+                <select
+                  className="form-control"
+                  id="sel1"
+                  onChange={[Function]}
+                >
+                  <option>
+                    day
+                  </option>
+                  <option>
+                    week
+                  </option>
+                  <option>
+                    month
+                  </option>
+                  <option>
+                    year
+                  </option>
+                </select>,
+              ],
+              "className": "form-group form-task",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": <label>
+                  Duration task:
+                </label>,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Duration task:",
+                },
+                "ref": null,
+                "rendered": Array [
+                  "Duration task:",
+                ],
+                "type": "label",
+              },
+              Object {
+                "instance": <select
+                  class="form-control"
+                  id="sel1"
+                >
+                  <option>
+                    day
+                  </option>
+                  <option>
+                    week
+                  </option>
+                  <option>
+                    month
+                  </option>
+                  <option>
+                    year
+                  </option>
+                </select>,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <option>
+                      day
+                    </option>,
+                    <option>
+                      week
+                    </option>,
+                    <option>
+                      month
+                    </option>,
+                    <option>
+                      year
+                    </option>,
+                  ],
+                  "className": "form-control",
+                  "id": "sel1",
+                  "onChange": [Function],
+                },
+                "ref": [Function],
+                "rendered": Array [
+                  Object {
+                    "instance": <option>
+                      day
+                    </option>,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "day",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      "day",
+                    ],
+                    "type": "option",
+                  },
+                  Object {
+                    "instance": <option>
+                      week
+                    </option>,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "week",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      "week",
+                    ],
+                    "type": "option",
+                  },
+                  Object {
+                    "instance": <option>
+                      month
+                    </option>,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "month",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      "month",
+                    ],
+                    "type": "option",
+                  },
+                  Object {
+                    "instance": <option>
+                      year
+                    </option>,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "year",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      "year",
+                    ],
+                    "type": "option",
+                  },
+                ],
+                "type": "select",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": <div
+              class="form-group"
+            >
+              <button
+                class="btn btn-success"
+                id="addTask"
+              >
+                Add task
+              </button>
+            </div>,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <button
+                className="btn btn-success"
+                id="addTask"
+              >
+                Add task
+              </button>,
+              "className": "form-group",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": <button
+                  class="btn btn-success"
+                  id="addTask"
+                >
+                  Add task
+                </button>,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Add task",
+                  "className": "btn btn-success",
+                  "id": "addTask",
+                },
+                "ref": null,
+                "rendered": Array [
+                  "Add task",
+                ],
+                "type": "button",
+              },
+            ],
+            "type": "div",
+          },
+        ],
+        "type": "form",
+      },
+      "type": [Function],
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`renders without crashing 1`] = `
+<form
+  className="form-task"
+  onSubmit={[Function]}
+>
+  <label>
+    Add task:
+  </label>
+  <input
+    className="form-control task"
+    id="task"
+    placeholder="Enter task"
+    type="text"
+  />
+  <input
+    className="form-control date"
+    id="date"
+    type="date"
+  />
+  <div
+    className="form-group form-task"
+  >
+    <label>
+      Duration task:
+    </label>
+    <select
+      className="form-control"
+      id="sel1"
+      onChange={[Function]}
+    >
+      <option>
+        day
+      </option>
+      <option>
+        week
+      </option>
+      <option>
+        month
+      </option>
+      <option>
+        year
+      </option>
+    </select>
+  </div>
+  <div
+    className="form-group"
+  >
+    <button
+      className="btn btn-success"
+      id="addTask"
+    >
+      Add task
+    </button>
+  </div>
+</form>
+`;

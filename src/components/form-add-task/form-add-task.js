@@ -70,7 +70,8 @@ const FormAddTask = ({onNewTask = (f) => f}) => {
           </select>
         </div>
         <div className="form-group">
-          <button className="btn btn-success">
+          <button className="btn btn-success"
+                  id="addTask">
             Add task
           </button>
         </div>

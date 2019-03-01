@@ -9,10 +9,19 @@ export default class Boards extends React.Component {
     this.state = {
       lanes: []
     }
+    this.addList = this.addList.bind(this);
+    this.addCard = this.addCard.bind(this);
+
   }
   
   componentDidMount() {
-    axios.get('http://localhost:3000/api/lists').then(response => {
+    const token = localStorage.getItem("token")
+
+    let config = {
+      headers: {'Authorization': "bearer " + token}
+    };
+
+    axios.get('http://localhost:3000/api/lists', config).then(response => {
     this.setState({
       lanes: response.data.map(this._transformData)
     })  
@@ -30,16 +39,30 @@ export default class Boards extends React.Component {
   };
 
   addList(params) {
+    const token = localStorage.getItem("token")
+
+    let config = {
+      headers: {'Authorization': "bearer " + token}
+    };
     const data = {name: params.title}
-    axios.post('http://localhost:3000/api/lists',data)
+
+    axios.post('http://localhost:3000/api/lists', data, config )
     .then(response => {
+      debugger
       const list = [...this.state.lanes, response.data]
       this.setState({lanes: list })
     })
   }
   deleteLane(laneId){
-    axios.delete(`http://localhost:3000/api/lists/${laneId}`)
+    const token = localStorage.getItem("token")
+
+    let config = {
+      headers: {'Authorization': "bearer " + token}
+    };
+
+    axios.delete(`http://localhost:3000/api/lists/${laneId}`, config)
     .then(response => {
+
       const lanes = this.state.lanes.filter(
         lane => lane.id !== laneId
       )
@@ -49,17 +72,29 @@ export default class Boards extends React.Component {
 
   }
   addCard(card, laneId) {
+    const token = localStorage.getItem("token")
+
+    let config = {
+      headers: {'Authorization': "bearer " + token}
+    };
     const data = {
       card: {...card,list_id: laneId}
     }
-    axios.post(`http://localhost:3000/api/cards`,data)
+
+    axios.post(`http://localhost:3000/api/cards`, data, config)
     .then(response => {
       const list = [...this.state.lanes.cards, response.data]
       this.setState({lanes: list })
     })
   }
   deleteCard(cardId){
-    axios.delete(`http://localhost:3000/api/cards/${cardId}`)
+    const token = localStorage.getItem("token")
+
+    let config = {
+      headers: {'Authorization': "bearer " + token}
+    };
+
+    axios.delete(`http://localhost:3000/api/cards/${cardId}`, config)
     .then(response => {
       const cards = this.state.lanes.cards.filter(
         card => card.id !== cardId
@@ -74,13 +109,15 @@ export default class Boards extends React.Component {
     const data = {cardId, 
                    cardDetails,
                    list_id: targetLaneId, 
-                   position}
+                   position: position+1} //fix lib error card last position
     axios.patch(`http://localhost:3000/api/cards/${cardId}/move`,data)
   }
 
   lineDragg(laneId, newPosition, payload) {
     let id = payload.id
-    const data = {position: newPosition + 1}            
+    debugger
+    let position = newPosition +1 //fix lib error position 0
+    const data = {position: position}
    axios.patch(`http://localhost:3000/api/lists/${id}/move`,data)
  }
  
