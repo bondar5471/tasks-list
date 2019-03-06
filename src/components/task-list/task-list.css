@@ -14,3 +14,12 @@
   color: rgb(92, 145, 175);
   text-decoration: underline wavy
 }
+
+.durationSlice {
+  display: none;
+}
+
+.labelDay {
+  display: block;
+  margin-left: 20px;
+}

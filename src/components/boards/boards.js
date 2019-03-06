@@ -48,7 +48,6 @@ export default class Boards extends React.Component {
 
     axios.post('http://localhost:3000/api/lists', data, config )
     .then(response => {
-      debugger
       const list = [...this.state.lanes, response.data]
       this.setState({lanes: list })
     })
@@ -105,7 +104,6 @@ export default class Boards extends React.Component {
   }
 
   cardDragg(cardId, sourceLaneId, targetLaneId, position, cardDetails) {
-    debugger 
     const data = {cardId, 
                    cardDetails,
                    list_id: targetLaneId, 
@@ -115,7 +113,6 @@ export default class Boards extends React.Component {
 
   lineDragg(laneId, newPosition, payload) {
     let id = payload.id
-    debugger
     let position = newPosition +1 //fix lib error position 0
     const data = {position: position}
    axios.patch(`http://localhost:3000/api/lists/${id}/move`,data)
