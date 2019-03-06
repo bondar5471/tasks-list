@@ -20,7 +20,7 @@ const customStyles = {
     marginRight           : '-50%',
     transform             : 'translate(-50%, -50%)',
     height                : 'auto',
-    width                 : '300px'
+    width                 : 'auto'
   }
 };
 Modal.setAppElement('body')
@@ -39,7 +39,8 @@ export default class TaskList extends Component {
       id: '',
       date_end: '',
       list: '',
-      subTasks: []
+      subTasks: [],
+      coutCheckbox: null
 
     }
     this.removeTask = this.removeTask.bind(this)
@@ -284,7 +285,6 @@ export default class TaskList extends Component {
     };
     axios.get(`http://localhost:3000/api/days/${day_id}/tasks/${id}/subtasks`, config)
         .then(response => {
-          debugger
           this.setState({
             subTasks: response.data
           })
@@ -343,9 +343,25 @@ export default class TaskList extends Component {
     this.closeModal()
   }
 
+  setResolveSubTaskTrue = (res, task_id, id) => {
+    const token = localStorage.getItem("token")
+    const config = {
+      headers: {'Authorization': "bearer " + token}
+      };
+    const data = {subtask: {resolved: res}}
+    axios.patch(`/api/days/:day_id/tasks/${task_id}/subtasks/${id}`, data, config)
+    .then(function (response) {
+      const day = response.data
+      console.log(day)
+    }).catch(function (error){
+        alert(error.message)
+    })
+
+  } 
 
   render() {
     var currentCount = 0;
+    debugger
     let coutCheckbox = 0;
     const {tasks, term, filter, loading, error, subTasks} = this.state
     const spinner = !loading ? <Spinner /> : null;
@@ -389,12 +405,11 @@ export default class TaskList extends Component {
           onRequestClose={this.closeModal2}
           style={customStyles}
           contentLabel="Modal">
-
         <span onClick={this.closeModal2}><span className="close warp black"></span></span>
         <h2 ref={subtitle => this.subtitle = subtitle}>SubTask</h2>
         <div>SubTask</div>
         <div className="subTask">
-        <form onSubmit={this.handleSubmit2}> //TODO
+        <form > //TODO
           {subTasks.map (subtask =>{
             function makeCounter() {
               currentCount = currentCount + 1;
@@ -408,16 +423,13 @@ export default class TaskList extends Component {
                   <input
                       type="checkbox"
                       id={makeCounter()}
-                      className="checkDone"
                       key={subtask.id}
-                      onChange={(e) =>{
-                        if (e.target.checked == true){
-                          coutCheckbox = coutCheckbox + 1
-                        } else {
-                          coutCheckbox = coutCheckbox - 1
-                        }
-                       return coutCheckbox
-                      }} />
+                      value={subtask.resolved}
+                      className={subtask.resolved === true ? 'checkDone' : 'checkNot'}
+                      
+                      onChange={(e) =>{ 
+                        let res = e.target.checked 
+                        this.setResolveSubTaskTrue(res, subtask.task_id, subtask.id)}} />
                 </label>
               </div>
             )
