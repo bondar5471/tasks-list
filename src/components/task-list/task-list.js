@@ -33,7 +33,7 @@ export default class TaskList extends Component {
       tasks: [],
       term: '',
       filter: 'all',
-      loading: true,
+      loading: false,
       error: false,
       dateTask: '',
       id: '',
@@ -191,6 +191,10 @@ export default class TaskList extends Component {
               days: response.data
           })
 			})
+    this.setState({
+      loading: true,
+      error: false
+    });
   }
 
   search(tasks, term) {
@@ -235,20 +239,6 @@ export default class TaskList extends Component {
         return tasks       
     }
   }
-  onTaskLoaded = (tasks) => {
-    this.setState({
-      tasks,
-      loading: false,
-      error: false
-    });
-  };
-
-  onError = (error) => {
-    this.setState({
-      error: true,
-      loading: false
-    });
-  };
   setDate = (e) => {
     this.setState({dateTask: e.target.value})
   }
@@ -361,9 +351,9 @@ export default class TaskList extends Component {
 
   render() {
     var currentCount = 0;
-    debugger
     let coutCheckbox = 0;
     const {tasks, term, filter, loading, error, subTasks} = this.state
+    debugger
     const spinner = !loading ? <Spinner /> : null;
     const errorMessage = error ? <ErrorIndicator/> : null;
     const visibleItem = this.search(this.filter(tasks, filter),term)
@@ -409,7 +399,7 @@ export default class TaskList extends Component {
         <h2 ref={subtitle => this.subtitle = subtitle}>SubTask</h2>
         <div>SubTask</div>
         <div className="subTask">
-        <form > //TODO
+        <form>
           {subTasks.map (subtask =>{
             function makeCounter() {
               currentCount = currentCount + 1;
@@ -418,7 +408,7 @@ export default class TaskList extends Component {
             return(
               <div>
                 <label>
-                    Task: {subtask.description}, "{moment(subtask.date).format("DD-MM")}"
+                    Task: {subtask.description}, {moment(subtask.date).format("ddd DD-MMMM")}
 
                   <input
                       type="checkbox"
