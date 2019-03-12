@@ -21,12 +21,16 @@ const Header = () => {
         </li>
       </ul>
       <ul className="auth-user d-flex">
-        <li>
+        <li
+            className={localStorage.getItem("token") !== null ? 'logOutHide' : ''}>
           < Link to="/login">Login</Link>
         </li>
+        {/*<li>*/}
+            {/*<Link to="/google_auth">Google auth</Link>*/}
+        {/*</li>*/}
         <li>
           <button
-            className="btn btn-danger logout"
+            className={localStorage.getItem("token") !== null ? "btn btn-danger logout" : "logOutHide"}
             onClick={() => localStorage.removeItem('token')}>
           Exit</button>
         </li>

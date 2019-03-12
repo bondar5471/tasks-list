@@ -277,6 +277,7 @@ export default class TaskList extends Component {
         .then(response => {
           this.setState({
             subTasks: response.data
+
           })
         })
   }
@@ -353,7 +354,6 @@ export default class TaskList extends Component {
     var currentCount = 0;
     let coutCheckbox = 0;
     const {tasks, term, filter, loading, error, subTasks} = this.state
-    debugger
     const spinner = !loading ? <Spinner /> : null;
     const errorMessage = error ? <ErrorIndicator/> : null;
     const visibleItem = this.search(this.filter(tasks, filter),term)
@@ -406,8 +406,9 @@ export default class TaskList extends Component {
               return currentCount;
             }
             return(
-              <div>
-                <label>
+              <div key={subtask.id}>
+                <label
+                   className={subtask.resolved === true ? 'finish' : ''}>
                     Task: {subtask.description}, {moment(subtask.date).format("ddd DD-MMMM")}
 
                   <input
@@ -459,7 +460,7 @@ export default class TaskList extends Component {
                   <i className="fa fa-exclamation" />
                 </button>
                 <button className="btn btn-outline-danger btn-sm float-right"
-                        onClick ={()=>this.removeTask(task.id) }>
+                        onClick ={()=> {if (window.confirm('Are you sure ?'))this.removeTask(task.id) }}>
                         <i className="fa fa-trash"/></button>
                 <button className={task.duration === "week" ? 'btn btn-outline-warning btn-sm ' : 'durationSlice'}
                         onClick={()=>{ this.openModal();

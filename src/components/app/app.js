@@ -8,6 +8,7 @@ import Login from '../login'
 import SignUp from '../sign-up'
 import jwtDecode from 'jwt-decode'
 import Boards from '../boards'
+import ReactGoogleAuth from '../google-auth'
 import './app.css';
 
 
@@ -46,6 +47,7 @@ export default class App extends Component {
                 <Route path="/days" component={DaysContainer} />
                 <Route path="/tasks" component={TaskList} />
                 <Route path="/boards" component={Boards} />
+                <Route path="/google_auth" component={ReactGoogleAuth}/>
                 <Redirect to="/" />
               </Switch>
               </div>
