@@ -37,7 +37,7 @@ export default class TaskList extends Component {
       dateTask: '',
       id: '',
       date_end: '',
-      list: '',
+      description: '',
       weekDays: [],
       dayId: ''
 
@@ -50,10 +50,10 @@ export default class TaskList extends Component {
     this.closeModal = this.closeModal.bind(this);
   }
   
-  addNewTask(list, date_end, duration) {
+  addNewTask(description, date_end, duration) {
     const {days} = this.state
     let day_id
-    const task = {task:{ list, day_id: day_id, date_end, duration}}
+    const task = {task:{ description, day_id: day_id, date_end, duration}}
     const getDayId = days.forEach( day => {
       if (day.date === task.task.date_end) {
         day_id = day.id
@@ -199,7 +199,7 @@ export default class TaskList extends Component {
       return tasks
     }
     return tasks.filter((task) =>{
-      return task.list.toLowerCase()
+      return task.description.toLowerCase()
        .indexOf(term.toLowerCase()) > -1
     })
   }
@@ -253,10 +253,10 @@ export default class TaskList extends Component {
     this.setState({modalIsOpen: false});
   }
 
-  writeTaskState = (id, date_end, list, day_id) => {
+  writeTaskState = (id, date_end, description, day_id) => {
     this.setState({id: id});
     this.setState({date_end: date_end});
-    this.setState({list: list})
+    this.setState({description: description})
     this.setState({dayId: day_id})
   }
 
@@ -265,7 +265,8 @@ export default class TaskList extends Component {
     event.preventDefault();
     let task_id = this.state.id
     let days = this.state.weekDays
-    let data = {days, task_id }
+    let description = this.state.description
+    let data = {days, task_id , task: {description: description}}
     const token = localStorage.getItem("token")
 
     const config = {
@@ -292,7 +293,11 @@ export default class TaskList extends Component {
     this.setState({weekDays: days})
   }
 
-  render() {
+  setDescription = (e) => {
+    this.setState({description: e.target.value})
+  }
+
+    render() {
     const {tasks, term, filter, loading, error} = this.state
     const spinner = !loading ? <Spinner /> : null;
     const errorMessage = error ? <ErrorIndicator/> : null;
@@ -314,11 +319,11 @@ export default class TaskList extends Component {
             <FormGroup>
               <FormControl
                   autoFocus
-                  id="list"
+                  id="description"
                   type="text"
                   key={this.state.id}
-                  value={this.state.list}
-                  onChange={this.setReport}
+                  placeholder={this.state.description}
+                  onChange={this.setDescription}
               />
               <label className="checkBoxDays">
                 <input type="checkbox" className="checkBoxDays" name="1"
@@ -418,7 +423,7 @@ export default class TaskList extends Component {
             <span
                 onClick={() => this.onTaskClick(task.id, task.status, task.date_end)}
                 className = {task.status === "in_progress" ? '' : 'finish'}>
-                {task.list}</span>
+                {task.description}</span>
             <span className="date-task">{moment(task.date_end).format("ll")}
                <button type="button"
                     className="btn btn-outline-success btn-sm float-right"
@@ -431,7 +436,7 @@ export default class TaskList extends Component {
                         <i className="fa fa-trash"/></button>
                 <button className={task.duration === "week" ? 'btn btn-outline-warning btn-sm ' : 'durationSlice'}
                         onClick={()=>{ this.openModal();
-                        this.writeTaskState(task.id, task.date_end, task.list, task.day_id, task.day_id);}}>
+                        this.writeTaskState(task.id, task.date_end, task.description, task.day_id, task.day_id);}}>
                         <i className="fa fa-scissors"/></button>
               </span>
           </li>
