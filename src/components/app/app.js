@@ -39,15 +39,13 @@ export default class App extends Component {
               <div>
                 <Header />
               <Switch>  
-                <Route path="/" 
-                render={()=> <DaysContainer/>}
-                exact/>
+                <Route path="/" exact component={DaysContainer} />
                 <Route path="/login" exact component={Login} />
                 <Route path="/sign_up" exact component={SignUp}/>
                 <Route path="/tasks" component={TaskList} />
                 <Route path="/boards" component={Boards} />
                 <Route path="/google_auth" component={ReactGoogleAuth}/>
-                <Redirect to="/days" />
+                <Redirect to="/" />
               </Switch>
               </div>
             </Router>

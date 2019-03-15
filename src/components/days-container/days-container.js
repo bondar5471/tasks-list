@@ -100,6 +100,7 @@ class DaysContainer extends Component {
 			}).catch(function (error){
 					alert(error.message)
 			})
+        debugger
 			this.props.history.push('/tasks')
 		}
 	

@@ -114,8 +114,8 @@ export default class TaskList extends Component {
     const config = {
     headers: {'Authorization': "bearer " + token}
     };
-    
-    axios.put(`http://localhost:3000/api/days/${dayId}/tasks/` + id, task, config)
+
+    axios.patch(`http://localhost:3000/api/days/${dayId}/tasks/` + id, task, config)
          .then(response => {
            const newTask = response.data;
            let { tasks } = this.state;
@@ -125,11 +125,18 @@ export default class TaskList extends Component {
              }
            })
            this.setState({ tasks })
+             axios.get(`http://localhost:3000/api/days/${id}/tasks`, config)
+                 .then(response =>{
+                     this.setState({
+                         tasks: response.data
+                     })
+                 })
          })
          .catch(error => {
            console.log(error)
          })
   }
+
 
   onToggleImportant(id, importance, date_end){
     let task
@@ -183,7 +190,6 @@ export default class TaskList extends Component {
       })
     axios.get('http://localhost:3000/api/days', config)
 			.then(response => {
-        console.log(config)
           this.setState({
               days: response.data
           })
@@ -322,10 +328,10 @@ export default class TaskList extends Component {
                   id="description"
                   type="text"
                   key={this.state.id}
-                  placeholder={this.state.description}
+                  defaultValue={this.state.description}
                   onChange={this.setDescription}
               />
-              <label className="checkBoxDays">
+              <label className="checkBoxDays" key="1">
                 <input type="checkbox" className="checkBoxDays" name="1"
                     onChange={(e)=>{
                       let res = e.target.checked
@@ -335,7 +341,7 @@ export default class TaskList extends Component {
                 </input>
                 Monday
               </label>
-              <label className="checkBoxDays">
+              <label className="checkBoxDays" key="2">
                 <input type="checkbox" className="checkBoxDays" name="2"
                        onChange={(e)=>{
                          let res = e.target.checked
@@ -345,7 +351,7 @@ export default class TaskList extends Component {
                 </input>
                 Tuesday
               </label>
-              <label className="checkBoxDays">
+              <label className="checkBoxDays" key="3">
                 <input type="checkbox" className="checkBoxDays" name="3"
                        onChange={(e)=>{
                          let res = e.target.checked
@@ -355,7 +361,7 @@ export default class TaskList extends Component {
                 </input>
                 Wednesday
               </label>
-              <label className="checkBoxDays">
+              <label className="checkBoxDays" key="4">
                 <input type="checkbox" className="checkBoxDays" name="4"
                        onChange={(e)=>{
                          let res = e.target.checked
@@ -365,7 +371,7 @@ export default class TaskList extends Component {
                 </input>
                 Thursday
               </label>
-              <label className="checkBoxDays">
+              <label className="checkBoxDays" key="5">
                 <input type="checkbox" className="checkBoxDays" name="5"
                        onChange={(e)=>{
                          let res = e.target.checked
@@ -376,7 +382,7 @@ export default class TaskList extends Component {
                 Friday
               </label>
 
-              <label className="checkBoxDays">
+              <label className="checkBoxDays" key="6">
                 <input type="checkbox" className="checkBoxDays" name="6"
                        onChange={(e)=>{
                          let res = e.target.checked
@@ -386,7 +392,7 @@ export default class TaskList extends Component {
                 </input>
                 Saturday
               </label>
-              <label className="checkBoxDays">
+              <label className="checkBoxDays" key="7">
                 <input type="checkbox" className="checkBoxDays" name="0"
                        onChange={(e)=>{
                          let res = e.target.checked

@@ -8,7 +8,7 @@
   cursor: pointer;
 }
 .finish {
-  text-decoration: line-through
+  text-decoration: line-through red ;
 }
 .importance {
   color: rgb(92, 145, 175);
