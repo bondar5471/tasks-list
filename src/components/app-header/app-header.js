@@ -11,9 +11,6 @@ const Header = () => {
       </h1>
       <ul className="d-flex">
         <li>
-         <Link to="/tasks">Tasks</Link>
-        </li>
-        <li>
           <Link to="/boards">Boards</Link>
         </li>
       </ul>

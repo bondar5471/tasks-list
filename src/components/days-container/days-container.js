@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import ReactTooltip from 'react-tooltip'
-import { Button, FormGroup, FormControl } from "react-bootstrap";
+import { Button, FormGroup, FormControl, Dropdown} from "react-bootstrap";
 import Modal from 'react-modal';
 import moment from 'moment'
 import './days-container.css'
@@ -13,6 +13,8 @@ const customStyles = {
   content : {
     top                   : '50%',
     left                  : '50%',
+    height                : '350px',
+    width                 : '350px',
     right                 : 'auto',
     bottom                : 'auto',
     marginRight           : '-50%',
@@ -61,7 +63,7 @@ class DaysContainer extends Component {
 		}
 	
 		afterOpenModal() {
-			this.subtitle.style.color = '#f00';
+			this.subtitle.style.color = '#416dff';
 		}
 	
 		closeModal() {
@@ -80,8 +82,15 @@ class DaysContainer extends Component {
 			this.setState({id: e.id});
 			this.setState({date: e.date});
 			this.setState({report: e.report})
-		}	
-		
+		}
+
+    autoComplete() {
+      console.log("Auto")
+    }
+
+    manuallyComplete() {
+      console.log("Manually")
+    }
 
 		handleSubmit = async event => {
 			event.preventDefault();
@@ -100,8 +109,6 @@ class DaysContainer extends Component {
 			}).catch(function (error){
 					alert(error.message)
 			})
-        debugger
-			this.props.history.push('/tasks')
 		}
 	
 
@@ -163,21 +170,23 @@ class DaysContainer extends Component {
 												id="report"
 												type="texy"
 												key={this.state.id}
-												placeholder={this.state.report}
+                        defaultValue={this.state.report}
 												onChange={this.setReport}
 												/>
 										</FormGroup>
-										
 										<FormGroup>
-										<label className="successfulLabel">
+										<label
+                      className="successfulLabel croupCheckDay"
+                      id="noSet"
+                    >
 											<input 
 											  type="checkbox"
 											  className="successfulCheck"
 											  onChange={this.setSuccessfull}>
 											 </input>
 											successful day
-										</label>	 
-										</FormGroup>
+										</label>
+                    </FormGroup>
 										<Button
 											block
 											type="submit">
@@ -185,7 +194,22 @@ class DaysContainer extends Component {
 										</Button>
 									</form>
 								</div>
-						</Modal>	
+						</Modal>
+            <Dropdown className="setting">
+              <Dropdown.Toggle variant="dark" id="dropdown-basic">
+                <i className="fa fa-cog"/> Setting
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  title="Determines the success of the day for completed tasks"
+                  onClick={this.autoComplete}>
+                  Auto Complete successful*</Dropdown.Item>
+                <Dropdown.Item
+                  title="Success of the day is set manually"
+                  onClick={this.manuallyComplete}>
+                  Complete successful*</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
 					</div>
         )
     }

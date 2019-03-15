@@ -17,3 +17,12 @@
 .successfulCheck:focus {
   outline:0px solid white;
 }
+.croupCheckDay{
+    display: block;
+}
+
+.setting{
+    margin-top: 15px;
+    margin-left: 3px;
+    margin-bottom: 50px;
+}
