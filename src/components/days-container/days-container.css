@@ -4,13 +4,14 @@
   padding: 4px;
 
 }
-.react-calendar-heatmap .color-scale-1 { fill: #9bfcef; }
+.react-calendar-heatmap .color-scale-1 { fill: #66797d; }
 .react-calendar-heatmap .color-scale-2 { fill: #fd4a4a; }
 .react-calendar-heatmap .color-scale-3 { fill: #44a340; }
 
-.calendar {
-  margin-bottom: 20px
+.react-calendar-heatmap-month-labels{
+    transform: translateX(25px);
 }
+
 .successfulCheck{
   margin-left: 18px;
 }

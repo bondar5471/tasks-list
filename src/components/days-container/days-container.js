@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import ReactTooltip from 'react-tooltip'
+import Spinner from '../spinner/spinner'
 import { Button, FormGroup, FormControl, Dropdown} from "react-bootstrap";
 import Modal from 'react-modal';
 import moment from 'moment'
@@ -32,12 +33,15 @@ class DaysContainer extends Component {
 					report: "",
 					successful: false,
 					date: "",
-					id: ""
+					id: "",
+          loading: true
 			}
 			this.openModal = this.openModal.bind(this);
 			this.afterOpenModal = this.afterOpenModal.bind(this);
-			this.closeModal = this.closeModal.bind(this);
-		}
+		 	this.closeModal = this.closeModal.bind(this);
+		  this.autoComplete = this.autoComplete.bind(this)
+
+    }
 		
     componentDidMount() {
 			const token = localStorage.getItem("token")
@@ -45,13 +49,13 @@ class DaysContainer extends Component {
 			let config = {
 				headers: {'Authorization': "bearer " + token}
 		  };
-		
-		  
+
         axios.get('http://localhost:3000/api/days', config)		
 				.then(response => {
 					console.log(config)
             this.setState({
-								days: response.data
+              days: response.data,
+              loading: false
 						})
         })
         .catch(error => console.log(error))
@@ -84,12 +88,20 @@ class DaysContainer extends Component {
 			this.setState({report: e.report})
 		}
 
-    autoComplete() {
+     autoComplete = () => {
+       this.setState({loading: true})
+      const token = localStorage.getItem("token")
       console.log("Auto")
-    }
+      axios.get('http://localhost:3000/api/days',
+        {params: {status: 'auto'},headers: {'Authorization': "bearer " + token}})
+        .then(response => {
+          this.setState({
+            days: response.data,
+            loading: false
+          })
 
-    manuallyComplete() {
-      console.log("Manually")
+        })
+        .catch(error => console.log(error))
     }
 
 		handleSubmit = async event => {
@@ -103,17 +115,23 @@ class DaysContainer extends Component {
       };
 	
 			await axios.put(`http://localhost:3000/api/days/${idDay}`, data, config)
-			.then(function (response) {
-				const day = response.data
-				console.log(day)
+			.then((response) =>{
+				const newDay = response.data
+        let { days } = this.state;
+        days.forEach(day => {
+          if (day.id === newDay.id) {
+            day.successful = newDay.successful;
+          }
+        })
 			}).catch(function (error){
 					alert(error.message)
 			})
+      this.closeModal()
 		}
 	
 
     render() {
-			const {days} = this.state
+      const {loading, days} = this.state
 			let count = 0 
 			  const functionCalculateDateCount = days.map(day=> {
 					if (day.successful === true ) {
@@ -128,73 +146,79 @@ class DaysContainer extends Component {
 					)
 					
 				})
-        return (
-					<div className="calendar-heatmap calendar">
-							<CalendarHeatmap		
-							startDate={ new Date(moment(Date.now()).startOf('year').subtract('1', 'days').format("YYYY-MM-DD"))} 
-							endDate={new Date(moment(Date.now()).endOf('year').format("YYYY-MM-DD"))}
-							values={functionCalculateDateCount}
-							onClick={(e)=>{ this.openModal(); this.writeDayState(e);}}
-							tooltipDataAttrs={value => {
-								return {
-									'data-tip': `Date: ${moment(value.date).format('LL')}` ,
-									'value': {id: value.id, date: value.date, report: value.report, successful: value.successful}, 
-								};
-							}}
+      if (loading){
+        return<Spinner/>
+      }
 
-							classForValue={(value) => {
-								if (!value) {
-									return 'color-empty';
-								}
-								return `color-scale-${value.count}`;
-							}}
-						/>
+      return (
+          <div>
+            <div className="calendar-heatmap calendar">
 
-						<ReactTooltip />
+              <CalendarHeatmap
+                startDate={ new Date(moment(Date.now()).startOf('year').subtract('1', 'days').format("YYYY-MM-DD"))}
+                endDate={new Date(moment(Date.now()).endOf('year').format("YYYY-MM-DD"))}
+                values={functionCalculateDateCount}
+                onClick={(e)=>{ this.openModal(); this.writeDayState(e);}}
+                tooltipDataAttrs={value => {
+                  return {
+                    'data-tip': `Date: ${moment(value.date).format('LL')}` ,
+                    'value': {id: value.id, date: value.date, report: value.report, successful: value.successful},
+                  };
+                }}
 
-						<Modal
-						isOpen={this.state.modalIsOpen}
-						onAfterOpen={this.afterOpenModal}
-						onRequestClose={this.closeModal}
-						style={customStyles}
-						contentLabel="Modal">
+                classForValue={(value) => {
+                  if (!value) {
+                    return 'color-empty';
+                  }
+                  return `color-scale-${value.count}`;
+                }}
+              />
 
-						<span onClick={this.closeModal}><span className="close warp black"></span></span>
-						<h2 ref={subtitle => this.subtitle = subtitle}>{moment(this.state.date).format('LL')}</h2>
-							<div>edit this day</div>
-								<div className="editDay">
-									<form onSubmit={this.handleSubmit}>
-										<FormGroup>
-											<FormControl
-												autoFocus
-												id="report"
-												type="texy"
-												key={this.state.id}
-                        defaultValue={this.state.report}
-												onChange={this.setReport}
-												/>
-										</FormGroup>
-										<FormGroup>
-										<label
-                      className="successfulLabel croupCheckDay"
-                      id="noSet"
-                    >
-											<input 
-											  type="checkbox"
-											  className="successfulCheck"
-											  onChange={this.setSuccessfull}>
-											 </input>
-											successful day
-										</label>
-                    </FormGroup>
-										<Button
-											block
-											type="submit">
-											Edit
-										</Button>
-									</form>
-								</div>
-						</Modal>
+              <ReactTooltip />
+              <Modal
+              isOpen={this.state.modalIsOpen}
+              onAfterOpen={this.afterOpenModal}
+              onRequestClose={this.closeModal}
+              style={customStyles}
+              contentLabel="Modal">
+
+              <span onClick={this.closeModal}><span className="close warp black"></span></span>
+              <h2 ref={subtitle => this.subtitle = subtitle}>{moment(this.state.date).format('LL')}</h2>
+                <div>edit this day</div>
+                  <div className="editDay">
+                    <form onSubmit={this.handleSubmit}>
+                      <FormGroup>
+                        <FormControl
+                          autoFocus
+                          id="report"
+                          type="texy"
+                          key={this.state.id}
+                          defaultValue={this.state.report}
+                          onChange={this.setReport}
+                          />
+                      </FormGroup>
+                      <FormGroup>
+                      <label
+                        className="successfulLabel croupCheckDay"
+                        id="noSet"
+                      >
+                        <input
+                          type="checkbox"
+                          className="successfulCheck"
+                          onChange={this.setSuccessfull}>
+                         </input>
+                        successful day
+                      </label>
+                      </FormGroup>
+                      <Button
+                        block
+                        type="submit">
+                        Edit
+                      </Button>
+                    </form>
+                  </div>
+              </Modal>
+            </div>
             <Dropdown className="setting">
               <Dropdown.Toggle variant="dark" id="dropdown-basic">
                 <i className="fa fa-cog"/> Setting
@@ -204,13 +228,9 @@ class DaysContainer extends Component {
                   title="Determines the success of the day for completed tasks"
                   onClick={this.autoComplete}>
                   Auto Complete successful*</Dropdown.Item>
-                <Dropdown.Item
-                  title="Success of the day is set manually"
-                  onClick={this.manuallyComplete}>
-                  Complete successful*</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-					</div>
+          </div>
         )
     }
 }

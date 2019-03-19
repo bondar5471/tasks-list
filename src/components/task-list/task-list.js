@@ -32,7 +32,7 @@ export default class TaskList extends Component {
       tasks: [],
       term: '',
       filter: 'all',
-      loading: false,
+      loading: true,
       error: false,
       dateTask: '',
       id: '',
@@ -191,11 +191,11 @@ export default class TaskList extends Component {
     axios.get('http://localhost:3000/api/days', config)
 			.then(response => {
           this.setState({
-              days: response.data
+              days: response.data,
+              loading: false
           })
 			})
     this.setState({
-      loading: true,
       error: false
     });
   }
@@ -302,21 +302,22 @@ export default class TaskList extends Component {
   setDescription = (e) => {
     this.setState({description: e.target.value})
   }
-
     render() {
     const {tasks, term, filter, loading, error} = this.state
-    const spinner = !loading ? <Spinner /> : null;
     const errorMessage = error ? <ErrorIndicator/> : null;
     const visibleItem = this.search(this.filter(tasks, filter),term)
-    return (
+      if (loading) {
+        return <Spinner/>
+      }
+      return (
     <div>
+      <h4>Task count: {tasks.length}</h4>
       <Modal
           isOpen={this.state.modalIsOpen}
           onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
           style={customStyles}
           contentLabel="Modal">
-
         <span onClick={this.closeModal}><span className="close warp black"></span></span>
         <h2 ref={subtitle => this.subtitle = subtitle}>Slice task</h2>
         <div>Task</div>
@@ -331,6 +332,8 @@ export default class TaskList extends Component {
                   defaultValue={this.state.description}
                   onChange={this.setDescription}
               />
+              <fieldset>
+                <legend>Days</legend>
               <label className="checkBoxDays" key="1">
                 <input type="checkbox" className="checkBoxDays" name="1"
                     onChange={(e)=>{
@@ -402,6 +405,7 @@ export default class TaskList extends Component {
                 </input>
                 Sunday
               </label>
+              </fieldset>
             </FormGroup>
             <Button
                 block
@@ -419,8 +423,7 @@ export default class TaskList extends Component {
                 autoFocus
                 id="dateFilter"
                 onChange={this.setDate}
-                className="form-control dateFilter"/>   
-      {spinner}
+                className="form-control dateFilter"/>
       {errorMessage}
       {visibleItem.map(task => {
         return(

@@ -21,33 +21,32 @@ export default class Login extends Component {
   }
 
   handleSubmit = async event => {
+    const {history} = this.props
     event.preventDefault();
-    let data = { password: this.state.password, email: this.state.email }
-
+    let data = { password: this.state.password, email: this.state.email };
     await axios.post("http://localhost:3000/api/v1/sessions", data)
     .then(function (response) {
-      const user = response.data
+      const user = response.data;
       console.log(user)
     }).catch(function (error){
         alert(error.message)
-    })
+    });
     
     let auth = { auth: {
       email: this.state.email, 
       password: this.state.password } 
-    }
-    axios.post("http://localhost:3000/user_token", auth).then(function (res) {
-      const token = res.data.jwt
-      localStorage.setItem('token', token)
-    })
-
-    this.props.history.push('/')
-  }
+    };
+    await axios.post("http://localhost:3000/user_token", auth).then(function (res) {
+      const token = res.data.jwt;
+      localStorage.setItem('token', token);
+      history.push("/")
+    });
+  };
 
   
   validateForm() {
-    let email = this.state.email
-    let password = this.state.password
+    let email = this.state.email;
+    let password = this.state.password;
     return email.length > 0 && password.length > 0
   }
   
@@ -69,7 +68,7 @@ export default class Login extends Component {
               autoFocus
               id="authEmail"
               type="email"
-              placeholder="Email addres"
+              placeholder="Email"
               onChange={this.setEmail}/>
           </FormGroup>
           <FormGroup >
@@ -77,7 +76,7 @@ export default class Login extends Component {
             <FormControl
               id="authPassword"
               type="password"
-              placeholder="Email addres"
+              placeholder="Password"
               onChange={this.setPassword} />
           </FormGroup>
           <Button
