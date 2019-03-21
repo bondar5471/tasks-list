@@ -33,7 +33,7 @@ export default class SignUp extends React.Component {
       console.log(user)
     }).catch(function (error){
       if (error.response && error.response.status === 422) {
-          alert("User with such emails exist")
+        alert("No correct data")
       }
     })
 
@@ -41,12 +41,15 @@ export default class SignUp extends React.Component {
       email: this.state.email,
       password: this.state.password }
     }
-    Axios.post("http://localhost:3000/user_token", auth).then(function (res) {
+    Axios.post("http://localhost:3000/user_token", auth)
+      .then(function (res) {
       const token = res.data.jwt
       console.log(token)
       localStorage.setItem('token', token)
     })
-    this.props.history.push('/login')
+      .catch( (error) => {
+        this.props.history.push('/sign_up')
+      })
   }
 
   validateForm() {

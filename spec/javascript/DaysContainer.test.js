@@ -1,5 +1,5 @@
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
+import Enzyme, { mount, shallow } from 'enzyme';
 import enzymeAdapterReact16 from 'enzyme-adapter-react-16';
 
 import DaysContainer from '../../src/components/days-container/days-container';
@@ -17,8 +17,12 @@ describe('DaysContainer component', () => {
 
     it('expect calendar DayContainer', () => {
         const {} = getDefaultProps();
-        const wrapper = shallow(<DaysContainer />);
+        const wrapper = mount(<DaysContainer />);
         const calendar = wrapper.find('.react-calendar-heatmap');
         expect(calendar).toBeTruthy();
+    })
+
+    it('is render spinner loading', () => {
+
     })
 });

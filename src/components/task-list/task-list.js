@@ -34,7 +34,7 @@ export default class TaskList extends Component {
       filter: 'all',
       loading: true,
       error: false,
-      dateTask: '',
+      dateTask: moment().format('YYYY-MM-DD'),
       id: '',
       date_end: '',
       description: '',
@@ -67,12 +67,12 @@ export default class TaskList extends Component {
     };
     
     axios.post(`http://localhost:3000/api/days/${id}/tasks`, task, config)
-         .then(response => {
-           const tasks = [...this.state.tasks, response.data]
-           this.setState({tasks})
-         })
-         .catch(error => {
-         })
+     .then(response => {
+       const tasks = [...this.state.tasks, response.data]
+       this.setState({tasks})
+     })
+     .catch(error => {
+     })
   }
   
   removeTask(id) {
@@ -116,25 +116,25 @@ export default class TaskList extends Component {
     };
 
     axios.patch(`http://localhost:3000/api/days/${dayId}/tasks/` + id, task, config)
-         .then(response => {
-           const newTask = response.data;
-           let { tasks } = this.state;
-           tasks.forEach(task => {
-             if (task.id === newTask.id) {
-               task.status = newTask.status;
-             }
-           })
-           this.setState({ tasks })
-             axios.get(`http://localhost:3000/api/days/${id}/tasks`, config)
-                 .then(response =>{
-                     this.setState({
-                         tasks: response.data
-                     })
-                 })
+       .then(response => {
+         const newTask = response.data;
+         let { tasks } = this.state;
+         tasks.forEach(task => {
+           if (task.id === newTask.id) {
+             task.status = newTask.status;
+           }
          })
-         .catch(error => {
-           console.log(error)
-         })
+         this.setState({ tasks })
+           axios.get(`http://localhost:3000/api/days/${id}/tasks`, config)
+               .then(response =>{
+                   this.setState({
+                       tasks: response.data
+                   })
+               })
+       })
+       .catch(error => {
+         console.log(error)
+       })
   }
 
 
@@ -422,6 +422,7 @@ export default class TaskList extends Component {
        <input type="date"
                 autoFocus
                 id="dateFilter"
+                defaultValue={moment().format('YYYY-MM-DD')}
                 onChange={this.setDate}
                 className="form-control dateFilter"/>
       {errorMessage}
@@ -435,15 +436,15 @@ export default class TaskList extends Component {
                 {task.description}</span>
             <span className="date-task">{moment(task.date_end).format("ll")}
                <button type="button"
-                    className="btn btn-outline-success btn-sm float-right"
+                    className="btn btn-outline-success btn-sm float-right bt-group"
                     onClick={() => this.onToggleImportant(task.id, task.importance, task.date_end)}
                     >
                   <i className="fa fa-exclamation" />
                 </button>
-                <button className="btn btn-outline-danger btn-sm float-right"
+                <button className="btn btn-outline-danger btn-sm float-right bt-group"
                         onClick ={()=> {if (window.confirm('Are you sure ?'))this.removeTask(task.id) }}>
                         <i className="fa fa-trash"/></button>
-                <button className={task.duration === "week" ? 'btn btn-outline-warning btn-sm ' : 'durationSlice'}
+                <button className={task.duration === "week" ? 'btn btn-outline-warning btn-sm bt-group' : 'durationSlice'}
                         onClick={()=>{ this.openModal();
                         this.writeTaskState(task.id, task.date_end, task.description, task.day_id, task.day_id);}}>
                         <i className="fa fa-scissors"/></button>

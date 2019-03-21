@@ -29,7 +29,9 @@ export default class Login extends Component {
       const user = response.data;
       console.log(user)
     }).catch(function (error){
-        alert(error.message)
+      if (error.response.status === 401){
+        alert("Invalid password or email")
+      }
     });
     
     let auth = { auth: {
@@ -77,7 +79,7 @@ export default class Login extends Component {
               id="authPassword"
               type="password"
               placeholder="Password"
-              onChange={this.setPassword} />
+              onChange={this.setPassword}/>
           </FormGroup>
           <Button
             block

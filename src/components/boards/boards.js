@@ -13,7 +13,7 @@ export default class Boards extends React.Component {
     this.addCard = this.addCard.bind(this);
 
   }
-  
+
   componentDidMount() {
     const token = localStorage.getItem("token")
 
@@ -24,20 +24,19 @@ export default class Boards extends React.Component {
     axios.get('http://localhost:3000/api/lists', config).then(response => {
     this.setState({
       lanes: response.data.map(this._transformData)
-    })  
-    console.log(this.state.lanes)
+    })
   })
   .catch(error => console.log(error))
   }
 
   _transformData = (list) => {
     return {
-      id: list.id,
+      id: parseInt(list.id),
       title: list.name,
       cards: list.cards
     };
   };
-
+  //TO DO
   addList(params) {
     const token = localStorage.getItem("token")
 
@@ -53,6 +52,7 @@ export default class Boards extends React.Component {
     })
   }
   deleteLane(laneId){
+    console.log('delete')
     const token = localStorage.getItem("token")
 
     let config = {
@@ -117,11 +117,12 @@ export default class Boards extends React.Component {
     const data = {position: position}
    axios.patch(`http://localhost:3000/api/lists/${id}/move`,data)
  }
- 
+
   render() {
+    debugger
     const {lanes} = this.state
 
-    return <Board data={{lanes}} 
+    return <Board data={{lanes}}
                   draggable
                   editable
                   canAddLanes
@@ -134,4 +135,3 @@ export default class Boards extends React.Component {
                   />          
   }
 }
-

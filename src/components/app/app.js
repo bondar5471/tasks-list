@@ -30,7 +30,6 @@ export default class App extends Component {
       console.log("Login")}
     else {
       const user = jwtDecode(jwt)
-      console.log(jwt)
       this.setState({
         userId: user.sub,
         userEmail: user.email})}
