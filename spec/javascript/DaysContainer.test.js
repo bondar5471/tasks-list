@@ -8,21 +8,21 @@ Enzyme.configure({ adapter: new enzymeAdapterReact16() });
 const getDefaultProps = () => ({});
 
 describe('DaysContainer component', () => {
-    it('shallow renders without crashing', () => {
-        const {} = getDefaultProps();
-        const wrapper = shallow(<DaysContainer />);
-        expect(wrapper).toMatchSnapshot();
-        expect(wrapper.length).toEqual(1)
-    });
+  it('shallow renders without crashing', () => {
+    const {} = getDefaultProps();
+    const wrapper = shallow(<DaysContainer />);
+    expect(wrapper).toMatchSnapshot();
+    expect(wrapper).toHaveLength(1)
+  });
 
-    it('expect calendar DayContainer', () => {
-        const {} = getDefaultProps();
-        const wrapper = mount(<DaysContainer />);
-        const calendar = wrapper.find('.react-calendar-heatmap');
-        expect(calendar).toBeTruthy();
-    })
+  it('expect calendar DayContainer', () => {
+    const {} = getDefaultProps();
+    const wrapper = mount(<DaysContainer />);
+    const calendar = wrapper.find('.react-calendar-heatmap');
+    expect(calendar).toBeTruthy();
+  })
 
-    it('is render spinner loading', () => {
+  it('is render spinner loading', () => {
 
-    })
+  })
 });

@@ -37,3 +37,8 @@
 .bt-group {
   margin-left: 3px;
 }
+.task-container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 600px;
+}
