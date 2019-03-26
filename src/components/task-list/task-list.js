@@ -40,7 +40,6 @@ export default class TaskList extends Component {
       description: '',
       weekDays: [],
       dayId: ''
-
     }
     this.removeTask = this.removeTask.bind(this)
     this.addNewTask = this.addNewTask.bind(this)
@@ -51,26 +50,23 @@ export default class TaskList extends Component {
   }
   
   addNewTask(description, date_end, duration) {
-    const { days } = this.state
-    let day_id
-    const task = { task:{ description, day_id: day_id, date_end, duration } }
-    const getDayId = days.forEach( day => {
-      if (day.date === task.task.date_end) {
-        day_id = day.id
-      }
-      return (day_id)
-    })
-    const id = day_id
+    //create day before task
     const token = localStorage.getItem('token')
-    const config = {
-    headers: { 'Authorization': 'bearer ' + token }
-    };
-    
-    axios.post(`http://localhost:3000/api/days/${ id }/tasks`, task, config)
-     .then(response => {
-       const tasks = [ ...this.state.tasks, response.data ]
-       this.setState({ tasks })
-     })
+    const config = { headers: { 'Authorization': 'bearer ' + token } };
+    const day = { date: date_end, successful: false }
+    axios.post('http://localhost:3000/api/days', day, config)
+      .then(response =>{
+        const newDay = response.data
+        const days = [ ...this.state.days, newDay ]
+        this.setState({ days })
+
+        const task = { task:{ description, day_id: response.data.id, date_end, duration } }
+        axios.post(`http://localhost:3000/api/days/${ response.data.id }/tasks`, task, config)
+          .then(response => {
+            const tasks = [ ...this.state.tasks, response.data ]
+            this.setState({ tasks })
+          })
+      })
   }
   
   removeTask(id) {
@@ -104,6 +100,7 @@ export default class TaskList extends Component {
         day_id = day.id
       }
       return (day_id)
+
     })
     const dayId = day_id
     this.setState({ sliceId: dayId })

@@ -5,7 +5,9 @@ import ReactTooltip from 'react-tooltip'
 import Spinner from '../spinner/spinner'
 import { Button, FormGroup, FormControl, Dropdown } from 'react-bootstrap';
 import Modal from 'react-modal';
-import moment from 'moment'
+import Moment from 'moment';
+
+import { mapDays } from '../../services/mappers';
 import './days-container.css'
 import 'react-calendar-heatmap/dist/styles.css';
 
@@ -31,9 +33,10 @@ class DaysContainer extends Component {
 					modalIsOpen: false,
 					report: '',
 					successful: false,
-					date: '',
+					date: null,
 					id: '',
-          loading: true
+          loading: true,
+          dayRange: []
 			}
 			this.openModal = this.openModal.bind(this);
 			this.afterOpenModal = this.afterOpenModal.bind(this);
@@ -50,14 +53,15 @@ class DaysContainer extends Component {
         axios.get('http://localhost:3000/api/days', config)		
 				.then(response => {
             this.setState({
-              days: response.data,
+              days: mapDays(response.data),
               loading: false
 						})
         })
         .catch(error => console.log(error))
 		}
 
-		openModal() {
+		openModal(value) {
+      this.setState({ date: value.date })
 			this.setState({ modalIsOpen: true });
 		}
 	
@@ -67,6 +71,7 @@ class DaysContainer extends Component {
 	
 		closeModal() {
 			this.setState({ modalIsOpen: false });
+			this.setState({ successful: false })
 		}
 		setReport = (e) => {
 			this.setState({ report: e.target.value })
@@ -76,13 +81,6 @@ class DaysContainer extends Component {
 			this.setState({ successful: e.target.checked })
 		}
 
-		writeDayState = (e) => {
-			
-			this.setState({ id: e.id });
-			this.setState({ date: e.date });
-			this.setState({ report: e.report })
-		}
-
      autoComplete = () => {
        this.setState({ loading: true })
        const token = localStorage.getItem('token')
@@ -90,33 +88,27 @@ class DaysContainer extends Component {
         { params: { status: 'auto' },headers: { 'Authorization': 'bearer ' + token } })
          .then(response => {
             this.setState({
-            days: response.data,
+            days:mapDays(response.data),
             loading: false
             })
-
-        })
+         })
         .catch(error => console.log(error))
     }
 
 		handleSubmit = async event => {
 			event.preventDefault();
-			const idDay = this.state.id
-			const data = { report: this.state.report, successful: this.state.successful }
+			const data = { date: this.state.date, report: this.state.report, successful: this.state.successful }
 			const token = localStorage.getItem('token')
 
       const config = {
       headers: { 'Authorization': 'bearer ' + token }
       };
 	
-			await axios.put(`http://localhost:3000/api/days/${ idDay }`, data, config)
+			await axios.post(`http://localhost:3000/api/days/`, data, config)
 			.then((response) =>{
 				const newDay = response.data
-        const { days } = this.state;
-        days.forEach(day => {
-          if (day.id === newDay.id) {
-            day.successful = newDay.successful;
-          }
-        })
+        const days = [ ...this.state.days, newDay ]
+        this.setState({ days })
 			}).catch(function (error){
 					alert(error.message)
 			})
@@ -124,21 +116,22 @@ class DaysContainer extends Component {
 		}
 
     render() {
+
       const { loading, days } = this.state
-			let count = 0 
+      let count = 0
 			const functionCalculateDateCount = days.map(day=> {
-					if (day.successful === true ) {
+          if (day.successful === true ) {
 						count =  3
 					} else if (day.successful === false) {
             count =  2
 					} else {
 						count = 1
 					}
-					return(
-            { date: day.date, report: day.report, count: count, id: day.id, successful: day.successful }
-					)
-					
-				})
+        return(
+          { date: day.date, report: day.report, count: count, id: day.id, successful: day.successful }
+        )
+			});
+
       if (loading){
         return<Spinner/>
       }
@@ -148,13 +141,13 @@ class DaysContainer extends Component {
               <div className="calendar-heatmap calendar">
 
                   <CalendarHeatmap
-                startDate={ new Date(moment(Date.now()).startOf('year').subtract('1', 'days').format('YYYY-MM-DD')) }
-                endDate={ new Date(moment(Date.now()).endOf('year').format('YYYY-MM-DD')) }
+                startDate={ new Date(Moment(Date.now()).startOf('year').subtract('1', 'days').format('YYYY-MM-DD')) }
+                endDate={ new Date(Moment(Date.now()).endOf('year').format('YYYY-MM-DD')) }
                 values={ functionCalculateDateCount }
-                onClick={ (e)=>{ this.openModal(); this.writeDayState(e);} }
+                onClick={ value => this.openModal(value) }
                 tooltipDataAttrs={ value => {
                   return {
-                    'data-tip': `Date: ${ moment(value.date).format('LL') }` ,
+                    'data-tip': `Date: ${ Moment(value.date).format('LL') }` ,
                     'value': { id: value.id, date: value.date, report: value.report, successful: value.successful },
                   };
                 } }
@@ -174,10 +167,9 @@ class DaysContainer extends Component {
               onRequestClose={ this.closeModal }
               style={ customStyles }
               contentLabel="Modal">
-
                       <span onClick={ this.closeModal }><span className="close warp black"></span></span>
-                      <h2 ref={ subtitle => this.subtitle = subtitle }>{moment(this.state.date).format('LL')}</h2>
-                      <div>edit this day</div>
+                      <h2 ref={ subtitle => this.subtitle = subtitle }>{Moment(this.state.date).format('LL')}</h2>
+                      <div>Create day</div>
                       <div className="editDay">
                           <form onSubmit={ this.handleSubmit }>
                               <FormGroup>
@@ -186,7 +178,6 @@ class DaysContainer extends Component {
                           id="report"
                           type="texy"
                           key={ this.state.id }
-                          defaultValue={ this.state.report }
                           onChange={ this.setReport }
                           />
                               </FormGroup>
@@ -206,7 +197,7 @@ class DaysContainer extends Component {
                               <Button
                         block
                         type="submit">
-                        Edit
+                        Create
                               </Button>
                           </form>
                       </div>
@@ -220,7 +211,7 @@ class DaysContainer extends Component {
                       <Dropdown.Item
                   title="Determines the success of the day for completed tasks"
                   onClick={ this.autoComplete }>
-                  Auto Complete successful*</Dropdown.Item>
+                  Auto Complete*</Dropdown.Item>
                   </Dropdown.Menu>
               </Dropdown>
           </div>
