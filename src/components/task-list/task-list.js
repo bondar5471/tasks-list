@@ -69,13 +69,12 @@ export default class TaskList extends Component {
       })
   }
   
-  removeTask(id) {
-    const day = null
+  removeTask(id, day_id) {
     const token = localStorage.getItem('token')
     const config = {
     headers: { 'Authorization': 'bearer ' + token }
     };
-    axios.delete(`http://localhost:3000/api/days/${ day }/tasks/`+ id, config)
+    axios.delete(`http://localhost:3000/api/days/${ day_id }/tasks/`+ id, config)
     .then(response => {
       const tasks = this.state.tasks.filter(
         task => task.id !== id
@@ -436,7 +435,7 @@ export default class TaskList extends Component {
                             <i className="fa fa-exclamation" />
                         </button>
                         <button className="btn btn-outline-danger btn-sm float-right bt-group"
-                        onClick ={ ()=> {if (window.confirm('Are you sure ?'))this.removeTask(task.id) } }>
+                        onClick ={ ()=> {if (window.confirm('Are you sure ?'))this.removeTask(task.id, task.day_id) } }>
                             <i className="fa fa-trash"/></button>
                         <button
                           className={ task.duration === 'week' ? 'btn btn-outline-warning btn-sm bt-group' : 'durationSlice' }
