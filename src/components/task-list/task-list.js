@@ -2,13 +2,14 @@ import React, { Component } from 'react'
 import SearchPanel from '../search-panel'
 import TaskDurationFilter from '../task-duration-filter'
 import FormAddTask from '../form-add-task'
-import Spinner from '../spinner'
 import ErrorIndicator from '../error-indicator'
 import Modal from 'react-modal';
 import axios from 'axios'
 import moment from 'moment'
 import './task-list.css'
 import { Button, FormControl, FormGroup } from 'react-bootstrap';
+import { connect } from "react-redux";
+import { loadedDays, loadedTasks } from '../../actions'
 
 const customStyles = {
   content : {
@@ -24,12 +25,10 @@ const customStyles = {
 };
 Modal.setAppElement('body')
 
-export default class TaskList extends Component {
+class TaskList extends Component {
   constructor (props){
     super(props)
     this.state = {
-      days: [],
-      tasks: [],
       term: '',
       filter: 'all',
       loading: true,
@@ -57,13 +56,13 @@ export default class TaskList extends Component {
     axios.post('http://localhost:3000/api/days', day, config)
       .then(response =>{
         const newDay = response.data
-        const days = [ ...this.state.days, newDay ]
+        const days = [ ...this.props.days, newDay ]
         this.setState({ days })
 
         const task = { task:{ description, day_id: response.data.id, date_end, duration } }
         axios.post(`http://localhost:3000/api/days/${ response.data.id }/tasks`, task, config)
           .then(response => {
-            const tasks = [ ...this.state.tasks, response.data ]
+            const tasks = [ ...this.props.tasks, response.data ]
             this.setState({ tasks })
           })
       })
@@ -91,10 +90,9 @@ export default class TaskList extends Component {
       {task = { task: { status: 'finished' } } }
     else 
       {task = { task: { status: 'in_progress' } } }
-    
-      const { days } = this.state
+
     let day_id
-    const getDayId = days.forEach( day => {
+    const getDayId = this.props.days.forEach( day => {
       if (day.date === date_end) {
         day_id = day.id
       }
@@ -138,10 +136,9 @@ export default class TaskList extends Component {
       {task = { task: { importance: true } } }
     else 
       {task = { task: { importance: false } } }
-    
-      const { days } = this.state
+
     let day_id
-    const getDayId = days.forEach( day => {
+    const getDayId = this.props.days.forEach( day => {
       if (day.date === date_end) {
         day_id = day.id
       }
@@ -171,26 +168,8 @@ export default class TaskList extends Component {
   }
 
   componentDidMount() {
-    const id = this.state.day;
-    const token = localStorage.getItem('token')
-    const config = {
-    headers: { 'Authorization': 'bearer ' + token }
-    };
-    axios.get(`http://localhost:3000/api/days/${ id }/tasks`, config)
-      .then(res => {
-        const tasks = res.data;
-        this.setState({ tasks })
-      })
-    axios.get('http://localhost:3000/api/days', config)
-			.then(response => {
-          this.setState({
-              days: response.data,
-              loading: false
-          })
-			})
-    this.setState({
-      error: false
-    });
+    this.props.loadedTasks();
+    this.props.loadedDays();
   }
 
   search(tasks, term) {
@@ -296,15 +275,12 @@ export default class TaskList extends Component {
   }
 
     render() {
-    const { tasks, term, filter, loading, error } = this.state
+    const { term, filter, error } = this.state
     const errorMessage = error ? <ErrorIndicator/> : null;
-    const visibleItem = this.search(this.filter(tasks, filter),term)
-      if (loading) {
-        return <Spinner/>
-      }
+    const visibleItem = this.search(this.filter(this.props.tasks, filter),term)
       return (
           <div className="task-container">
-              <h4>Task count: {tasks.length}</h4>
+              <h4>Task count: {this.props.tasks.length}</h4>
               <Modal
           isOpen={ this.state.modalIsOpen }
           onAfterOpen={ this.afterOpenModal }
@@ -450,3 +426,10 @@ export default class TaskList extends Component {
           </div>   
     )}
 }
+const  mapStateToProps = (state) => {
+  return {
+    tasks: state.tasks,
+    days: state.days
+  }
+}
+export default connect(mapStateToProps, { loadedTasks, loadedDays })(TaskList);

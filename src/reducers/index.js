@@ -1,20 +1,8 @@
-const initialState = {
-  days: [],
-  tasks: []
-}
+import  { combineReducers } from 'redux'
+import  daysReducer from './daysReducer'
+import tasksReducer from './tasksReducer'
 
-const reducer = (state = initialState, action ) => {
-  switch (action.type) {
-    case 'DAYS_LOADED':
-      return {
-        days: action.payload
-      }
-    case 'TASKS_LOADED':
-      return {
-        tasks: action.payload
-      }
-    default:
-      return state;
-  }
-};
-export default  reducer;
+export default  combineReducers({
+  days: daysReducer,
+  tasks: tasksReducer
+});

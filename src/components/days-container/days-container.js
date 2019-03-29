@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import ReactTooltip from 'react-tooltip'
-import Spinner from '../spinner/spinner'
 import { Button, FormGroup, FormControl, Dropdown } from 'react-bootstrap';
 import Modal from 'react-modal';
 import Moment from 'moment';
+import { connect } from "react-redux";
+import  { loadedDays } from '../../actions'
 
-import { mapDays } from '../../services/mappers';
 import './days-container.css'
 import 'react-calendar-heatmap/dist/styles.css';
 
@@ -29,7 +29,6 @@ class DaysContainer extends Component {
     constructor(props){
 			super(props)
 			this.state = {
-					days: [],
 					modalIsOpen: false,
 					report: '',
 					successful: false,
@@ -44,39 +43,28 @@ class DaysContainer extends Component {
       this.autoComplete = this.autoComplete.bind(this)
 
     }
-		
+
     componentDidMount() {
-			const token = localStorage.getItem('token')
-
-			const config = { headers: { 'Authorization': 'bearer ' + token } };
-
-        axios.get('http://localhost:3000/api/days', config)		
-				.then(response => {
-            this.setState({
-              days: mapDays(response.data),
-              loading: false
-						})
-        })
-        .catch(error => console.log(error))
+			this.props.loadedDays();
 		}
 
 		openModal(value) {
       this.setState({ date: value.date })
 			this.setState({ modalIsOpen: true });
 		}
-	
+
 		afterOpenModal() {
 			this.subtitle.style.color = '#416dff';
 		}
-	
+
 		closeModal() {
 			this.setState({ modalIsOpen: false });
 			this.setState({ successful: false })
 		}
 		setReport = (e) => {
 			this.setState({ report: e.target.value })
-		} 
-	
+		}
+
 		setSuccessfull = (e) => {
 			this.setState({ successful: e.target.checked })
 		}
@@ -86,11 +74,8 @@ class DaysContainer extends Component {
        const token = localStorage.getItem('token')
        axios.get('http://localhost:3000/api/days',
         { params: { status: 'auto' },headers: { 'Authorization': 'bearer ' + token } })
-         .then(response => {
-            this.setState({
-            days:mapDays(response.data),
-            loading: false
-            })
+         .then(() => {
+           this.props.loadedDays();
          })
         .catch(error => console.log(error))
     }
@@ -103,12 +88,10 @@ class DaysContainer extends Component {
       const config = {
       headers: { 'Authorization': 'bearer ' + token }
       };
-	
+
 			await axios.post(`http://localhost:3000/api/days/`, data, config)
-			.then((response) =>{
-				const newDay = response.data
-        const days = [ ...this.state.days, newDay ]
-        this.setState({ days })
+			.then(() =>{
+        this.props.loadedDays();
 			}).catch(function (error){
 					alert(error.message)
 			})
@@ -116,10 +99,8 @@ class DaysContainer extends Component {
 		}
 
     render() {
-
-      const { loading, days } = this.state
       let count = 0
-			const functionCalculateDateCount = days.map(day=> {
+			const functionCalculateDateCount = this.props.days.map(day=> {
           if (day.successful === true ) {
 						count =  3
 					} else if (day.successful === false) {
@@ -131,10 +112,6 @@ class DaysContainer extends Component {
           { date: day.date, report: day.report, count: count, id: day.id, successful: day.successful }
         )
 			});
-
-      if (loading){
-        return<Spinner/>
-      }
 
       return (
           <div>
@@ -218,4 +195,8 @@ class DaysContainer extends Component {
         )
     }
 }
-export default DaysContainer;
+
+const  mapStateToProps = (state) => {
+  return { days: state.days }
+}
+export default connect(mapStateToProps, { loadedDays })(DaysContainer);
