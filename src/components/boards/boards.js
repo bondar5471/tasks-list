@@ -121,15 +121,15 @@ export default class Boards extends React.Component {
     const { lanes } = this.state
 
     return <Board data={ { lanes } }
-                  draggable
-                  editable
-                  canAddLanes
-                  onLaneAdd={ this.addList }
-                  onCardAdd={ this.addCard }
-                  onCardDelete={ this.deleteCard }
-                  removeLane={ this.deleteLane }
-                  handleDragEnd={ this.cardDragg }
-                  handleLaneDragEnd={ this.lineDragg }
+        draggable
+        editable
+        canAddLanes
+        onLaneAdd={ this.addList }
+        onCardAdd={ this.addCard }
+        onCardDelete={ this.deleteCard }
+        removeLane={ this.deleteLane }
+        handleDragEnd={ this.cardDragg }
+        handleLaneDragEnd={ this.lineDragg }
                   />          
   }
 }

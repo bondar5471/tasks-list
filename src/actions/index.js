@@ -5,7 +5,7 @@ const loadedDays = () => async dispatch => {
     const token = localStorage.getItem('token')
     const config = { headers: { 'Authorization': 'bearer ' + token } }
     const days = await diary.get('/days', config)
-    let response = mapDays(days.data)
+    const response = mapDays(days.data)
     dispatch({ type: 'LOADED_DAYS', payload: response }) ;
   };
 
@@ -13,7 +13,7 @@ const createDay = (dayData) => async dispatch => {
   const token = localStorage.getItem('token')
   const config = { headers: { 'Authorization': 'bearer ' + token } }
   const days = await diary.post('/days', dayData, config)
-  let response = mapDays(days.data)
+  const response = mapDays(days.data)
   dispatch({ type: 'CREATE_DAY', payload: response }) ;
 };
 
