@@ -59,9 +59,7 @@ class TaskList extends Component {
     const config = { headers: { Authorization: "bearer " + token } };
     const day = { date: date_end, successful: false };
     axios.post("http://localhost:3000/api/days", day, config).then(response => {
-      const newDay = response.data;
-      const days = [...this.props.days, newDay];
-      this.setState({ days });
+      this.props.loadedDays();
 
       const task = {
         task: { description, day_id: response.data.id, date_end, duration }
@@ -72,9 +70,8 @@ class TaskList extends Component {
           task,
           config
         )
-        .then(response => {
-          const tasks = [...this.props.tasks, response.data];
-          this.setState({ tasks });
+        .then(() => {
+          this.props.loadedTasks();
         });
     });
   }
