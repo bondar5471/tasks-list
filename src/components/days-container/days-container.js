@@ -1,13 +1,12 @@
 import React, { Component } from "react";
-import axios from "axios";
 import CalendarHeatmap from "react-calendar-heatmap";
 import ReactTooltip from "react-tooltip";
-import { Button, FormGroup, FormControl, Dropdown } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 import Modal from "react-modal";
 import Moment from "moment";
 import { connect } from "react-redux";
 import DayForm from "./reduxFormDay";
-import { loadedDays } from "../../actions";
+import { loadedDays, createDay, autoCompleteDays } from "../../actions";
 
 import "./days-container.css";
 import "react-calendar-heatmap/dist/styles.css";
@@ -31,16 +30,17 @@ class DaysContainer extends Component {
     super(props);
     this.state = {
       modalIsOpen: false,
-      report: "",
-      successful: false,
       date: null,
-      id: "",
       loading: true
     };
     this.openModal = this.openModal.bind(this);
-    this.afterOpenModal = this.afterOpenModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.autoComplete = this.autoComplete.bind(this);
+    this.submit = this.submit.bind(this);
+  }
+  submit(values) {
+    this.props.createDay(values);
+    this.closeModal();
   }
 
   componentDidMount() {
@@ -48,62 +48,15 @@ class DaysContainer extends Component {
   }
 
   openModal(value) {
-    this.setState({ date: value.date });
-    this.setState({ modalIsOpen: true });
-  }
-
-  afterOpenModal() {
-    this.subtitle.style.color = "#416dff";
+    this.setState({ date: value.date, modalIsOpen: true });
   }
 
   closeModal() {
     this.setState({ modalIsOpen: false });
-    this.setState({ successful: false });
   }
-  setReport = e => {
-    this.setState({ report: e.target.value });
-  };
-
-  setSuccessfull = e => {
-    this.setState({ successful: e.target.checked });
-  };
 
   autoComplete = () => {
-    this.setState({ loading: true });
-    const token = localStorage.getItem("token");
-    axios
-      .get("http://localhost:3000/api/days", {
-        params: { status: "auto" },
-        headers: { Authorization: "bearer " + token }
-      })
-      .then(() => {
-        this.props.loadedDays();
-      })
-      .catch(error => console.log(error));
-  };
-
-  handleSubmit = async event => {
-    event.preventDefault();
-    const data = {
-      date: this.state.date,
-      report: this.state.report,
-      successful: this.state.successful
-    };
-    const token = localStorage.getItem("token");
-
-    const config = {
-      headers: { Authorization: "bearer " + token }
-    };
-
-    await axios
-      .post("http://localhost:3000/api/days/", data, config)
-      .then(() => {
-        this.props.loadedDays();
-      })
-      .catch(function(error) {
-        alert(error.message);
-      });
-    this.closeModal();
+    this.props.autoCompleteDays();
   };
 
   render() {
@@ -164,11 +117,9 @@ class DaysContainer extends Component {
               return `color-scale-${value.count}`;
             }}
           />
-
           <ReactTooltip />
           <Modal
             isOpen={this.state.modalIsOpen}
-            onAfterOpen={this.afterOpenModal}
             onRequestClose={this.closeModal}
             style={customStyles}
             contentLabel="Modal"
@@ -176,36 +127,11 @@ class DaysContainer extends Component {
             <span onClick={this.closeModal}>
               <span className="close warp black" />
             </span>
-            <h2 ref={subtitle => (this.subtitle = subtitle)}>
-              {Moment(this.state.date).format("LL")}
-            </h2>
-            <div>Create day</div>
-            <div className="editDay">
-              <form onSubmit={this.handleSubmit}>
-                <FormGroup>
-                  <FormControl
-                    autoFocus
-                    id="report"
-                    type="texy"
-                    key={this.state.id}
-                    onChange={this.setReport}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <label className="successfulLabel croupCheckDay" id="noSet">
-                    <input
-                      type="checkbox"
-                      className="successfulCheck"
-                      onChange={this.setSuccessfull}
-                    />
-                    successful day
-                  </label>
-                </FormGroup>
-                <Button block type="submit">
-                  Create
-                </Button>
-              </form>
-            </div>
+            <h2> {Moment(this.state.date).format("MMMM DD.YY")} </h2>
+            <DayForm
+              onSubmit={this.submit}
+              initialValues={{ date: this.state.date, successful: false }}
+            />
           </Modal>
         </div>
         <Dropdown className="setting">
@@ -226,10 +152,14 @@ class DaysContainer extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return { days: state.days };
+const mapStateToProps = ({ days }) => {
+  return { days: days.days };
 };
 export default connect(
   mapStateToProps,
-  { loadedDays }
+  {
+    loadedDays,
+    createDay,
+    autoCompleteDays
+  }
 )(DaysContainer);

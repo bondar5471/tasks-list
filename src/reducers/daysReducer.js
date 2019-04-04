@@ -1,13 +1,30 @@
-export default (state = [], action) => {
+const initialState = { days: [] };
+
+export default (state = initialState, action) => {
+  let days = null;
   switch (action.type) {
     case 'LOADED_DAYS':
-      return  action.payload ;
+      return { ...state, days: action.payload };
     case 'CREATE_DAY':
-      return {};
+      days = state.days.map(day => {
+        if (day.date === action.payload.date) day = { ...action.payload };
+        return day;
+      });
+      return { ...state, days };
+    case 'UPDATE_DAY':
+      days = state.days.map(day => {
+        if (day.date === action.payload.date) day = { ...action.payload };
+        return day;
+      });
+      return { ...state, days };
+    case 'CREATE_TASK':
+      days = state.days.map(day => {
+        if (day.date === action.payload.day.date) return action.payload.day;
+        return day;
+      });
+      return {...state, days };
     case 'AUTO_COMPLETE_DAYS':
-      return {};
-    case 'DELETE_DAY':
-      return {};
+      return { ...state, days: action.payload };
     default:
        return state;
   }

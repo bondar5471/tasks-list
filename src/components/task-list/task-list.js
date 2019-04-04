@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import SearchPanel from "../search-panel";
 import TaskDurationFilter from "../task-duration-filter";
-import FormAddTask from "../form-add-task";
 import ErrorIndicator from "../error-indicator";
 import Modal from "react-modal";
 import axios from "axios";
@@ -9,7 +8,9 @@ import moment from "moment";
 import "./task-list.css";
 import { Button, FormControl, FormGroup } from "react-bootstrap";
 import { connect } from "react-redux";
-import { loadedDays, loadedTasks } from "../../actions";
+import { loadedDays, loadedTasks, createTask, createDay, deleteTask} from "../../actions";
+import TaskForm from './reduxTaskForm'
+
 
 const customStyles = {
   content: {
@@ -41,52 +42,33 @@ class TaskList extends Component {
       dayId: ""
     };
     this.removeTask = this.removeTask.bind(this);
-    this.addNewTask = this.addNewTask.bind(this);
     this.onTaskClick = this.onTaskClick.bind(this);
     this.openModal = this.openModal.bind(this);
     this.afterOpenModal = this.afterOpenModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.submit = this.submit.bind(this)
   }
 
   componentDidMount() {
     this.props.loadedTasks();
-    this.props.loadedDays();
   }
 
-  addNewTask(description, date_end, duration) {
-    //create day before task
-    const token = localStorage.getItem("token");
-    const config = { headers: { Authorization: "bearer " + token } };
-    const day = { date: date_end, successful: false };
-    axios.post("http://localhost:3000/api/days", day, config).then(response => {
-      this.props.loadedDays();
-
-      const task = {
-        task: { description, day_id: response.data.id, date_end, duration }
-      };
-      axios
-        .post(
-          `http://localhost:3000/api/days/${response.data.id}/tasks`,
-          task,
-          config
-        )
-        .then(() => {
-          this.props.loadedTasks();
-        });
+  submit(values) {
+    //create day before task if day == undefine
+    let day_id;
+    this.props.days.forEach(day => {
+      if (day.date === values.date_end) {
+        day_id = day.id;
+      }
+      return day_id;
     });
+    const day = { date: values.date_end, successful: false };
+    if (day_id == undefined) day_id = 'newDay';
+    this.props.createTask(values, day_id, day);
   }
 
   removeTask(id, day_id) {
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: { Authorization: "bearer " + token }
-    };
-    axios
-      .delete(`http://localhost:3000/api/days/${day_id}/tasks/` + id, config)
-      .then(() => {
-        this.props.loadedTasks();
-      })
-      .catch(error => console.log(error));
+    this.props.deleteTask(id, day_id)
   }
 
   onTaskClick(id, status, date_end) {
@@ -99,7 +81,7 @@ class TaskList extends Component {
     }
 
     let day_id;
-    const getDayId = this.props.days.forEach(day => {
+    this.props.days.forEach(day => {
       if (day.date === date_end) {
         day_id = day.id;
       }
@@ -240,9 +222,8 @@ class TaskList extends Component {
 
     await axios
       .post("http://localhost:3000/api/tasks/multi_create", data, config)
-      .then(response => {
-        const tasks = [...this.state.tasks, ...response.data];
-        this.setState({ tasks });
+      .then(() => {
+        this.props.loadedTasks();
       })
       .catch(function(error) {
         alert(error.message);
@@ -419,6 +400,7 @@ class TaskList extends Component {
           className="form-control dateFilter"
         />
         {errorMessage}
+
         {visibleItem.map(task => {
           return (
             <div key={task.id}>
@@ -472,7 +454,6 @@ class TaskList extends Component {
                         task.id,
                         task.date_end,
                         task.description,
-                        task.day_id,
                         task.day_id
                       );
                     }}
@@ -484,18 +465,23 @@ class TaskList extends Component {
             </div>
           );
         })}
-        <FormAddTask onNewTask={this.addNewTask} />
+        <TaskForm  onSubmit={this.submit} />
       </div>
     );
   }
 }
-const mapStateToProps = state => {
+const mapStateToProps = ({ days, tasks }) => {
   return {
-    tasks: state.tasks,
-    days: state.days
+    tasks: Object.values(tasks.tasks),
+    days: days.days
   };
 };
+
 export default connect(
   mapStateToProps,
-  { loadedTasks, loadedDays }
+  { loadedTasks,
+    loadedDays,
+    createTask,
+    createDay,
+    deleteTask }
 )(TaskList);

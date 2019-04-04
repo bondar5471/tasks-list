@@ -37,3 +37,22 @@
 .bt-group {
   margin-left: 3px;
 }
+/*redux form task create*/
+.fieldDescription {
+  width: 100%;
+}
+.fieldDate {
+  margin-top: 15px !important;
+  width: 100%;
+}
+.fieldSelect {
+  margin-top: 15px !important;
+  width: 200px !important;
+}
+.formTask {
+  border: powderblue 2px solid !important;
+  padding: 4px;
+}
+.buttonAdd {
+  margin-top: 15px !important;
+}

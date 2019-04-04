@@ -1,4 +1,5 @@
 import React from 'react';
+import { Provider } from "react-redux";
 import Enzyme, { mount, shallow } from 'enzyme';
 import enzymeAdapterReact16 from 'enzyme-adapter-react-16';
 
@@ -10,7 +11,11 @@ const getDefaultProps = () => ({});
 describe('DaysContainer component', () => {
   it('shallow renders without crashing', () => {
     const {} = getDefaultProps();
-    const wrapper = shallow(<DaysContainer />);
+    const wrapper = shallow(
+      <Provider store={store}>
+        <DaysContainer />
+      </Provider>
+      );
     expect(wrapper).toMatchSnapshot();
     expect(wrapper).toHaveLength(1)
   });

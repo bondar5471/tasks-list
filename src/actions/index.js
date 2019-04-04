@@ -1,46 +1,41 @@
 import diary from '../apis/diary'
+import mapKeys from 'lodash/mapKeys'
 import { mapDays } from '../services/mappers';
 
 const loadedDays = () => async dispatch => {
     const token = localStorage.getItem('token')
     const config = { headers: { 'Authorization': 'bearer ' + token } }
-    const days = await diary.get('/days', config)
-    const response = mapDays(days.data)
-    dispatch({ type: 'LOADED_DAYS', payload: response }) ;
+    const days = await diary.get('/days', config);
+    dispatch({ type: 'LOADED_DAYS', payload: mapDays(days.data) }) ;
   };
 
-const createDay = (dayData) => async dispatch => {
+const createDay = (values) => async dispatch => {
   const token = localStorage.getItem('token')
   const config = { headers: { 'Authorization': 'bearer ' + token } }
-  const days = await diary.post('/days', dayData, config)
-  const response = mapDays(days.data)
-  dispatch({ type: 'CREATE_DAY', payload: response }) ;
+  const response = await diary.post('/days', values, config);
+  dispatch({ type: 'CREATE_DAY', payload: response.data }) ;
 };
 
-const autoCompleteDays = (days) => {
-  return {
-    type: 'AUTO_COMPLETE_DAYS',
-    payload: days
-  }
-}
-const deleteDay = (day) => {
-  return {
-    type: 'DELETE_DAY',
-    payload: day
-  };
+const autoCompleteDays = () => async dispatch => {
+  const token = localStorage.getItem('token')
+  const response = await diary.get('/days', { params: { status: "auto" },
+    headers: { 'Authorization': 'bearer ' + token } });
+  dispatch({type: 'AUTO_COMPLETE_DAYS', payload: mapDays(response.data) })
 };
 
 const loadedTasks = () => async dispatch => {
   const token = localStorage.getItem('token')
   const config = { headers: { 'Authorization': 'bearer ' + token } }
   const response = await diary.get('/tasks', config)
-  dispatch({ type: 'LOADED_TASKS', payload: response.data }) ;
+  dispatch({ type: 'LOADED_TASKS', payload: mapKeys(response.data, 'id') }) ;
 };
-const createTask = (taskData) => {
-  return{
-    type: 'CREATE_TASK',
-    payload: taskData
-  };
+
+const createTask = (values, id, day) => async dispatch => {
+  const token = localStorage.getItem('token');
+  const config = { headers: { 'Authorization': 'bearer ' + token } };
+  const params = { ...values, day };
+  const response = await diary.post(`/days/${id}/tasks`, params, config);
+  dispatch({ type: 'CREATE_TASK', payload: response.data }) ;
 };
 
 const editTask = (task) => {
@@ -48,27 +43,26 @@ const editTask = (task) => {
     type: 'EDIT_TASK',
     payload: task
   }
-}
+};
 
 const sliceTask = (task) => {
   return {
     type: 'SLICE_TASK',
     payload: task
   }
-}
+};
 
-const deleteTask = (task) => {
-  return {
-    type: 'DELETE_TASK',
-    payload: task
-  };
+const deleteTask = (id, id_day) => async dispatch => {
+  const token = localStorage.getItem('token');
+  const config = { headers: { 'Authorization': 'bearer ' + token } };
+  await diary.delete(`/days/${id_day}/tasks/${id}`, config);
+  dispatch({ type: 'DELETE_TASK', payload: id }) ;
 };
 
 export {
   loadedDays,
   createDay,
   autoCompleteDays,
-  deleteDay,
   loadedTasks,
   createTask,
   editTask,

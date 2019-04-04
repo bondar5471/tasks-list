@@ -1,10 +1,11 @@
-export default (state = [], action) => {
+import omit from 'lodash/omit'
+const initialState = { tasks: {} };
+export default (state = initialState, action) => {
   switch (action.type) {
     case 'LOADED_TASKS':
-      return action.payload ;
+      return {...state, tasks: action.payload };
     case 'CREATE_TASK':
-      return {
-      };
+      return {...state, tasks: { ...state.tasks, [action.payload.task.id]: action.payload.task } };
     case 'EDIT_TASK':
       return {
       };
@@ -13,7 +14,10 @@ export default (state = [], action) => {
       };
     case 'DELETE_TASK':
       return {
+        ...state,
+        tasks: omit(state.tasks, action.payload),
       };
+
     default:
       return state;
   }
