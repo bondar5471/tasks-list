@@ -6,7 +6,7 @@ import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormHelperText from '@material-ui/core/FormHelperText'
-import { Field, reduxForm, change } from 'redux-form'
+import { Field, reduxForm, change, reset } from 'redux-form'
 import "./task-list.css";
 
 import moment from "moment";
@@ -120,9 +120,9 @@ class TaskForm extends Component {
   )
 
   render () {
-    const {onSubmit, handleSubmit} = this.props
+    const {onSubmit, handleSubmit, reset} = this.props
     return (
-      <form onSubmit={ handleSubmit(onSubmit) }>
+      <form onSubmit={ handleSubmit(onSubmit) } className="formTask">
         <div>
           <Field
             className="fieldDescription"
@@ -154,6 +154,9 @@ class TaskForm extends Component {
         </div>
         <Button type="submit" variant="contained" color="primary" className="buttonAdd">
           Add task
+        </Button>
+        <Button type="button" variant="contained" color="inherit" onClick={reset} className="buttonRes">
+          <i className="fa fa-refresh fa-2x"></i>
         </Button>
       </form>
     )

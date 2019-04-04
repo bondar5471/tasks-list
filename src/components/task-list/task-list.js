@@ -8,7 +8,14 @@ import moment from "moment";
 import "./task-list.css";
 import { Button, FormControl, FormGroup } from "react-bootstrap";
 import { connect } from "react-redux";
-import { loadedDays, loadedTasks, createTask, createDay, deleteTask} from "../../actions";
+import {
+  loadedDays,
+  loadedTasks,
+  createTask,
+  createDay,
+  deleteTask,
+  editTask,
+  onToggleImportant} from "../../actions";
 import TaskForm from './reduxTaskForm'
 
 
@@ -71,45 +78,17 @@ class TaskList extends Component {
     this.props.deleteTask(id, day_id)
   }
 
-  onTaskClick(id, status, date_end) {
+  onTaskClick(id, status) {
     let task;
-
     if (status === "in_progress") {
       task = { task: { status: "finished" } };
     } else {
       task = { task: { status: "in_progress" } };
     }
-
-    let day_id;
-    this.props.days.forEach(day => {
-      if (day.date === date_end) {
-        day_id = day.id;
-      }
-      return day_id;
-    });
-    const dayId = day_id;
-    this.setState({ sliceId: dayId });
-
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: { Authorization: "bearer " + token }
-    };
-
-    axios
-      .patch(
-        `http://localhost:3000/api/days/${dayId}/tasks/` + id,
-        task,
-        config
-      )
-      .then(() => {
-        this.props.loadedTasks();
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    this.props.editTask(task, id)
   }
 
-  onToggleImportant(id, importance, date_end) {
+  onToggleImportant(id, importance) {
     let task;
 
     if (importance === false) {
@@ -117,29 +96,7 @@ class TaskList extends Component {
     } else {
       task = { task: { importance: false } };
     }
-
-    let day_id;
-    const getDayId = this.props.days.forEach(day => {
-      if (day.date === date_end) {
-        day_id = day.id;
-      }
-      return day_id;
-    });
-    const dayId = day_id;
-
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: { Authorization: "bearer " + token }
-    };
-
-    axios
-      .put(`http://localhost:3000/api/days/${dayId}/tasks/` + id, task, config)
-      .then(() => {
-        this.props.loadedTasks();
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    this.props.onToggleImportant(task, id)
   }
 
   search(tasks, term) {
@@ -412,7 +369,7 @@ class TaskList extends Component {
               >
                 <span
                   onClick={() =>
-                    this.onTaskClick(task.id, task.status, task.date_end)
+                    this.onTaskClick(task.id, task.status)
                   }
                   className={task.status === "in_progress" ? "" : "finish"}
                 >
@@ -483,5 +440,8 @@ export default connect(
     loadedDays,
     createTask,
     createDay,
-    deleteTask }
+    deleteTask,
+    editTask,
+    onToggleImportant
+  }
 )(TaskList);

@@ -38,18 +38,19 @@ const createTask = (values, id, day) => async dispatch => {
   dispatch({ type: 'CREATE_TASK', payload: response.data }) ;
 };
 
-const editTask = (task) => {
-  return {
-    type: 'EDIT_TASK',
-    payload: task
-  }
+const editTask = (task, id) => async dispatch => {
+  const token = localStorage.getItem('token');
+  const config = { headers: { 'Authorization': 'bearer ' + token } };
+  const response = await diary.patch(`/tasks/${id}`, task, config);
+  dispatch({ type: 'EDIT_TASK', payload: response.data }) ;
 };
 
-const sliceTask = (task) => {
-  return {
-    type: 'SLICE_TASK',
-    payload: task
-  }
+
+const onToggleImportant = (task, id) => async dispatch => {
+  const token = localStorage.getItem('token');
+  const config = { headers: { 'Authorization': 'bearer ' + token } };
+  const response = await diary.patch(`/tasks/${id}`, task, config);
+  dispatch({ type: 'EDIT_TASK', payload: response.data }) ;
 };
 
 const deleteTask = (id, id_day) => async dispatch => {
@@ -66,6 +67,6 @@ export {
   loadedTasks,
   createTask,
   editTask,
-  sliceTask,
+  onToggleImportant,
   deleteTask
 }

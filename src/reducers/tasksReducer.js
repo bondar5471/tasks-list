@@ -7,17 +7,9 @@ export default (state = initialState, action) => {
     case 'CREATE_TASK':
       return {...state, tasks: { ...state.tasks, [action.payload.task.id]: action.payload.task } };
     case 'EDIT_TASK':
-      return {
-      };
-    case 'SLICE_TASK':
-      return {
-      };
+      return {...state, tasks: {...state.tasks, [action.payload.id]: action.payload } };
     case 'DELETE_TASK':
-      return {
-        ...state,
-        tasks: omit(state.tasks, action.payload),
-      };
-
+      return {...state, tasks: omit(state.tasks, action.payload) };
     default:
       return state;
   }

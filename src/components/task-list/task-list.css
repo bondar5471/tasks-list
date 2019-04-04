@@ -50,9 +50,15 @@
   width: 200px !important;
 }
 .formTask {
-  border: powderblue 2px solid !important;
-  padding: 4px;
+  border: black 2px solid !important;
+  padding: 4px !important;
+  margin-bottom: 60px  !important;
+
 }
 .buttonAdd {
   margin-top: 15px !important;
+}
+.buttonRes {
+  margin-top: 15px !important;
+  margin-left: 15px !important;
 }
