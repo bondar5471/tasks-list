@@ -6,7 +6,7 @@ import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormHelperText from '@material-ui/core/FormHelperText'
-import { Field, reduxForm, change, reset } from 'redux-form'
+import { Field, reduxForm, change} from 'redux-form'
 import "./task-list.css";
 
 import moment from "moment";
@@ -23,10 +23,6 @@ const datePic = duration => {
       .endOf("month")
       .format("YYYY-MM-DD");
     return taskMonthDate;
-  }
-  if (durationTask === "day") {
-    const taskDayDate = moment().format("YYYY-MM-DD");
-    return  taskDayDate;
   }
   if (durationTask === "week") {
     const taskWeekDate = moment()
@@ -155,7 +151,7 @@ class TaskForm extends Component {
         <Button type="submit" variant="contained" color="primary" className="buttonAdd">
           Add task
         </Button>
-        <Button type="button" variant="contained" color="inherit" onClick={reset} className="buttonRes">
+        <Button type="button" onClick={reset} className="buttonRes">
           <i className="fa fa-refresh fa-2x"></i>
         </Button>
       </form>
