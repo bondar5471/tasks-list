@@ -219,7 +219,7 @@ class TaskList extends Component {
           contentLabel="Modal"
         >
           <span onClick={this.closeModal}>
-            <span className="close warp black" />
+            <i className="fa fa-times fa-2x btnCloseModal" aria-hidden="true"></i>
           </span>
           <h2 ref={subtitle => (this.subtitle = subtitle)}>Slice task</h2>
           <div>Task</div>
@@ -235,7 +235,7 @@ class TaskList extends Component {
                   onChange={this.setDescription}
                 />
                 <fieldset>
-                  <legend>Days</legend>
+                  <legend>Days:</legend>
                   <label className="checkBoxDays" key="1">
                     <input
                       type="checkbox"
@@ -411,6 +411,7 @@ class TaskList extends Component {
                         task.id,
                         task.date_end,
                         task.description,
+                        task.day_id
                       );
                     }}
                   >

@@ -23,9 +23,12 @@ export default (state = initialState, action) => {
         return day;
       });
       return {...state, days };
-    case 'AUTO_COMPLETE_DAYS':
-      return { ...state, days: action.payload };
-    default:
+    case 'EDIT_TASK':
+      days = state.days.map(day => {
+        if (day.date === action.payload.day.date) return action.payload.day;
+        return day; });
+      return {...state, days };
+      default:
        return state;
   }
 }

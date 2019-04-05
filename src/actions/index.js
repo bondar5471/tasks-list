@@ -16,13 +16,6 @@ const createDay = (values) => async dispatch => {
   dispatch({ type: 'CREATE_DAY', payload: response.data }) ;
 };
 
-const autoCompleteDays = () => async dispatch => {
-  const token = localStorage.getItem('token')
-  const response = await diary.get('/days', { params: { status: "auto" },
-    headers: { 'Authorization': 'bearer ' + token } });
-  dispatch({type: 'AUTO_COMPLETE_DAYS', payload: mapDays(response.data) })
-};
-
 const loadedTasks = () => async dispatch => {
   const token = localStorage.getItem('token')
   const config = { headers: { 'Authorization': 'bearer ' + token } }
@@ -63,7 +56,6 @@ const deleteTask = (id, id_day) => async dispatch => {
 export {
   loadedDays,
   createDay,
-  autoCompleteDays,
   loadedTasks,
   createTask,
   editTask,

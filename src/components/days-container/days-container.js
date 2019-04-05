@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import CalendarHeatmap from "react-calendar-heatmap";
 import ReactTooltip from "react-tooltip";
-import { Dropdown } from "react-bootstrap";
 import Modal from "react-modal";
 import Moment from "moment";
 import { connect } from "react-redux";
 import DayForm from "./reduxFormDay";
-import { loadedDays, createDay, autoCompleteDays } from "../../actions";
+import { loadedDays, createDay } from "../../actions";
 
 import "./days-container.css";
 import "react-calendar-heatmap/dist/styles.css";
@@ -31,11 +30,11 @@ class DaysContainer extends Component {
     this.state = {
       modalIsOpen: false,
       date: null,
-      loading: true
+      loading: true,
+      report:''
     };
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    this.autoComplete = this.autoComplete.bind(this);
     this.submit = this.submit.bind(this);
   }
   submit(values) {
@@ -48,16 +47,12 @@ class DaysContainer extends Component {
   }
 
   openModal(value) {
-    this.setState({ date: value.date, modalIsOpen: true });
+    this.setState({ report: value.report, date: value.date, modalIsOpen: true });
   }
 
   closeModal() {
     this.setState({ modalIsOpen: false });
   }
-
-  autoComplete = () => {
-    this.props.autoCompleteDays();
-  };
 
   render() {
     let count = 0;
@@ -125,28 +120,16 @@ class DaysContainer extends Component {
             contentLabel="Modal"
           >
             <span onClick={this.closeModal}>
-              <span className="close warp black" />
+              <i className="fa fa-times fa-2x btnCloseModal" aria-hidden="true"></i>
             </span>
             <h2> {Moment(this.state.date).format("MMMM DD.YY")} </h2>
+            <p> Report: { this.state.report } </p>
             <DayForm
               onSubmit={this.submit}
               initialValues={{ date: this.state.date, successful: false }}
             />
           </Modal>
         </div>
-        <Dropdown className="setting">
-          <Dropdown.Toggle variant="dark" id="dropdown-basic">
-            <i className="fa fa-cog" /> Setting
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item
-              title="Determines the success of the day for completed tasks"
-              onClick={this.autoComplete}
-            >
-              Auto Complete*
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
       </div>
     );
   }
@@ -159,7 +142,6 @@ export default connect(
   mapStateToProps,
   {
     loadedDays,
-    createDay,
-    autoCompleteDays
+    createDay
   }
 )(DaysContainer);
