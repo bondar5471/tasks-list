@@ -411,7 +411,6 @@ class TaskList extends Component {
                         task.id,
                         task.date_end,
                         task.description,
-                        task.day_id
                       );
                     }}
                   >
