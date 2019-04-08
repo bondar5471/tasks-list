@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl } from "react-bootstrap";
 import "./login.css";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import { connect } from "react-redux";
+import { logInUser } from "../../actions";
 
-export default class Login extends Component {
+class Login extends Component {
   constructor(props) {
     super(props);
 
@@ -21,34 +22,9 @@ export default class Login extends Component {
   }
 
   handleSubmit = async event => {
-    const { history } = this.props;
     event.preventDefault();
     const data = { password: this.state.password, email: this.state.email };
-    await axios
-      .post("http://localhost:3000/api/v1/sessions", data)
-      .then(function(response) {
-        const user = response.data;
-        console.log(user);
-      })
-      .catch(function(error) {
-        if (error.response.status === 401) {
-          alert("Invalid password or email");
-        }
-      });
-
-    const auth = {
-      auth: {
-        email: this.state.email,
-        password: this.state.password
-      }
-    };
-    await axios
-      .post("http://localhost:3000/user_token", auth)
-      .then(function(res) {
-        const token = res.data.jwt;
-        localStorage.setItem("token", token);
-        history.push("/");
-      });
+    this.props.logInUser(data);
   };
 
   validateForm() {
@@ -66,6 +42,7 @@ export default class Login extends Component {
   };
 
   render() {
+    if (this.props.token) return <Redirect to='/' />;
     return (
       <div className="Login">
         <form onSubmit={this.handleSubmit}>
@@ -99,3 +76,14 @@ export default class Login extends Component {
     );
   }
 }
+
+const mapStateToProps = ({ user }) => {
+  return { user: user.key, token: user.token };
+};
+
+export default connect(
+  mapStateToProps,
+  {
+    logInUser
+  }
+)(Login);

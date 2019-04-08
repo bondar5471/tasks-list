@@ -8,6 +8,7 @@ import moment from "moment";
 import "./task-list.css";
 import { Button, FormControl, FormGroup } from "react-bootstrap";
 import { connect } from "react-redux";
+import _ from 'lodash';
 import {
   loadedDays,
   loadedTasks,
@@ -75,7 +76,8 @@ class TaskList extends Component {
   }
 
   removeTask(id, day_id) {
-    this.props.deleteTask(id, day_id)
+    let ids = _.filter(this.props.tasks, ['parent_id', id] )
+    this.props.deleteTask(id, day_id, _.map(ids, 'id'))
   }
 
   onTaskClick(id, status) {

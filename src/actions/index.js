@@ -46,11 +46,42 @@ const onToggleImportant = (task, id) => async dispatch => {
   dispatch({ type: 'EDIT_TASK', payload: response.data }) ;
 };
 
-const deleteTask = (id, id_day) => async dispatch => {
+const deleteTask = (id, id_day, ids) => async dispatch => {
   const token = localStorage.getItem('token');
   const config = { headers: { 'Authorization': 'bearer ' + token } };
   await diary.delete(`/days/${id_day}/tasks/${id}`, config);
-  dispatch({ type: 'DELETE_TASK', payload: id }) ;
+  dispatch({ type: 'DELETE_TASK', payload: {id: id, ids: ids} }) ;
+};
+
+const logInUser = (data) => async  dispatch => {
+  const auth = {
+    auth: {
+      email: data.email,
+      password: data.password
+    }
+  };
+  await diary.post('/v1/sessions', data)
+  const response = await diary.post('/user_token', auth);
+  localStorage.setItem("token", response.data.jwt);
+  dispatch({type: 'LOGIN_USER', payload: response.data});
+};
+
+const  signUpUser = (data) => async dispatch => {
+  await diary.post('/users', data);
+  const auth = {
+    auth: {
+      email: data.user.email,
+      password: data.user.password
+    }
+  };
+  const response = await diary.post('/user_token', auth);
+  localStorage.setItem("token", response.data.jwt);
+  dispatch({type: 'SIGNUP_USER', payload: response.data});
+};
+
+const logoutUser = () => {
+  localStorage.removeItem("token");
+  return { type: "LOGOUT_USER" };
 };
 
 export {
@@ -60,5 +91,8 @@ export {
   createTask,
   editTask,
   onToggleImportant,
-  deleteTask
+  deleteTask,
+  logInUser,
+  signUpUser,
+  logoutUser
 }

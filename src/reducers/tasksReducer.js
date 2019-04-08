@@ -13,7 +13,7 @@ export default (state = initialState, action) => {
       }
       return {...state, tasks: { ...tasks, [action.payload.task.id]: action.payload.task } };
     case 'DELETE_TASK':
-      return {...state, tasks: omit(state.tasks, action.payload) };
+      return {...state, tasks: omit(state.tasks, [action.payload.id].concat(action.payload.ids)) };
     default:
       return state;
   }

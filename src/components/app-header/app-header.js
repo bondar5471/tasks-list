@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import "./app-header.css";
 import { Link } from "react-router-dom";
+import { connect } from 'react-redux';
+import { history } from '../../helpers/history';
+import { logoutUser } from '../../actions';
 
-export default class Header extends Component {
-  constructor(props) {
-    super(props);
-    this.removeToken = this.removeToken.bind(this);
-  }
+class Header extends Component {
+  logout = () => {
+    this.props.logoutUser();
+    history.push('/login');
+    window.location.reload()
+  };
 
-  removeToken() {
-    localStorage.removeItem("token");
-    window.location.reload();
-  }
   render() {
     return (
       <div className="header d-flex">
@@ -34,13 +34,13 @@ export default class Header extends Component {
           <li>
             <button
               className={
-                localStorage.getItem("token") !== null
+                this.props.token !== null
                   ? "btn btn-danger logout"
                   : "logOutHide"
               }
               onClick={() => {
                 if (window.confirm("You are now signed out ?"))
-                  this.removeToken();
+                  this.logout();
               }}
             >
               Exit
@@ -51,3 +51,9 @@ export default class Header extends Component {
     );
   }
 }
+
+const mapStateToProps = ({user}) => {
+  return {token : user.token}
+}
+
+export default connect(mapStateToProps, { logoutUser })(Header);

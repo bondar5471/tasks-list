@@ -22,10 +22,8 @@ export default class App extends Component {
     userId: "",
     userEmail: ""
   };
-
   componentDidMount() {
     const jwt = localStorage.getItem("token");
-
     if (jwt == null) {
       console.log("Login");
     } else {

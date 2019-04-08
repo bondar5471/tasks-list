@@ -1,9 +1,10 @@
 import React from "react";
 import { Button, FormGroup, FormControl } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import Axios from "axios";
+import {Link, Redirect} from "react-router-dom";
+import { connect } from "react-redux";
+import { signUpUser } from "../../actions";
 
-export default class SignUp extends React.Component {
+class SignUp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -22,7 +23,6 @@ export default class SignUp extends React.Component {
   handleSubmit = event => {
     event.preventDefault();
     this.setUser();
-
     const data = {
       user: {
         email: this.state.email,
@@ -30,29 +30,7 @@ export default class SignUp extends React.Component {
         password_confirmation: this.state.passwordConfirmation
       }
     };
-    Axios.post("http://localhost:3000/api/users", data)
-      .then(response => {
-        const auth = {
-          auth: {
-            email: response.data.email,
-            password: this.state.password
-          }
-        };
-        Axios.post("http://localhost:3000/user_token", auth)
-          .then(res => {
-            const token = res.data.jwt;
-            localStorage.setItem("token", token);
-            this.props.history.push("/");
-          })
-          .catch(() => {
-            this.props.history.push("/sign_up");
-          });
-      })
-      .catch(function(error) {
-        if (error.response && error.response.status === 422) {
-          alert("No correct data");
-        }
-      });
+    this.props.signUpUser(data)
   };
 
   validateForm() {
@@ -87,6 +65,7 @@ export default class SignUp extends React.Component {
   }
 
   render() {
+    if (this.props.token) return <Redirect to='/' />;
     return (
       <div className="Login">
         <form onSubmit={this.handleSubmit}>
@@ -129,3 +108,14 @@ export default class SignUp extends React.Component {
     );
   }
 }
+
+const mapStateToProps = ({ user }) => {
+  return { user: user.key , token: user.token};
+};
+
+export default connect(
+  mapStateToProps,
+  {
+    signUpUser
+  }
+)(SignUp);
