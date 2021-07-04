@@ -1,9 +1,10 @@
-import React from 'react'
+import React from "react";
 import { Button, FormGroup, FormControl } from "react-bootstrap";
-import {Link} from 'react-router-dom'
-import Axios from 'axios'
+import {Link, Redirect} from "react-router-dom";
+import { connect } from "react-redux";
+import { signUpUser } from "../../actions";
 
-export default class SignUp extends React.Component {
+class SignUp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -17,67 +18,56 @@ export default class SignUp extends React.Component {
           passwordConfirmation: ""
         }
       }
-    }
+    };
   }
   handleSubmit = event => {
     event.preventDefault();
     this.setUser();
-
-    let data = { user: {email: this.state.email, 
-                 password: this.state.password,  
-                 password_confirmation: this.state.passwordConfirmation } }
-
-    Axios.post("http://localhost:3000/api/users", data)
-    .then(function (response) {
-      const user = response.data
-      console.log(user)
-    }).catch(function (error){
-      if (error.response && error.response.status === 422) {
-          alert("User with such emails exist")
+    const data = {
+      user: {
+        email: this.state.email,
+        password: this.state.password,
+        password_confirmation: this.state.passwordConfirmation
       }
-    })
-
-    let auth = { auth: {
-      email: this.state.email,
-      password: this.state.password }
-    }
-    Axios.post("http://localhost:3000/user_token", auth).then(function (res) {
-      const token = res.data.jwt
-      console.log(token)
-      localStorage.setItem('token', token)
-    })
-    this.props.history.push('/login')
-  }
+    };
+    this.props.signUpUser(data)
+  };
 
   validateForm() {
+    const email = this.state.email;
+    const password = this.state.password;
+    const passwordConfirmation = this.state.passwordConfirmation;
+    return (
+      email.length > 0 &&
+      password.length > 0 &&
+      password === passwordConfirmation
+    );
+  }
+  setPasswordConfirmation = e => {
+    this.setState({ passwordConfirmation: e.target.value });
+  };
+  setEmail = e => {
+    this.setState({ email: e.target.value });
+  };
 
-    let email = this.state.email
-    let password = this.state.password
-    let passwordConfirmation = this.state.passwordConfirmation
-    return email.length > 0 && 
-    password.length > 0 &&
-    password === passwordConfirmation
-  }
-  setPasswordConfirmation = (e) => {
-    this.setState({passwordConfirmation: e.target.value})
-    
-  }
-  setEmail = (e) => {
-    this.setState({email: e.target.value})
-  } 
-
-  setPassword = (e) => {
-    this.setState({password: e.target.value})
-  }
+  setPassword = e => {
+    this.setState({ password: e.target.value });
+  };
 
   setUser() {
-    this.setState({user: {email: this.state.email, password: this.state.password, passwordConfirmation: this.state.passwordConfirmation}})
+    this.setState({
+      user: {
+        email: this.state.email,
+        password: this.state.password,
+        passwordConfirmation: this.state.passwordConfirmation
+      }
+    });
   }
 
-render(){
-
-  return(
-    <div className="Login">
+  render() {
+    if (this.props.token) return <Redirect to='/' />;
+    return (
+      <div className="Login">
         <form onSubmit={this.handleSubmit}>
           <FormGroup>
             <label>Email</label>
@@ -86,35 +76,46 @@ render(){
               id="authEmail"
               type="email"
               placeholder="Email addres"
-              onChange={this.setEmail}/>
+              onChange={this.setEmail}
+            />
           </FormGroup>
-          <FormGroup >
-          <label>Password</label>
+          <FormGroup>
+            <label>Password</label>
             <FormControl
               id="authPassword"
               type="password"
               placeholder="Password"
-              onChange={this.setPassword} />
+              onChange={this.setPassword}
+            />
           </FormGroup>
-          <FormGroup >
-          <label>Password confirmation</label>
+          <FormGroup>
+            <label>Password confirmation</label>
             <FormControl
               id="authPasswordConfirmation"
               type="password"
               placeholder="Password confirmation"
-              onChange={this.setPasswordConfirmation} />
+              onChange={this.setPasswordConfirmation}
+            />
           </FormGroup>
-          <Button
-            block
-            disabled={!this.validateForm()}
-            type="submit">
+          <Button block disabled={!this.validateForm()} type="submit">
             Sign Up
           </Button>
-          <Link to="/login"
-              className="link-login">
-          Want to login</Link>
+          <Link to="/login" className="link-login">
+            Want to login
+          </Link>
         </form>
       </div>
-  )
-}  
+    );
+  }
 }
+
+const mapStateToProps = ({ user }) => {
+  return { user: user.key , token: user.token};
+};
+
+export default connect(
+  mapStateToProps,
+  {
+    signUpUser
+  }
+)(SignUp);

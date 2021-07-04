@@ -8,7 +8,7 @@
   cursor: pointer;
 }
 .finish {
-  text-decoration: line-through
+  text-decoration: line-through red ;
 }
 .importance {
   color: rgb(92, 145, 175);
@@ -28,4 +28,34 @@
 }
 .checkNot {
   margin-left: 35px
+}
+.checkBoxDays {
+  margin-left: 15px;
+}
+.bt-group {
+  margin-left: 3px;
+}
+/*redux form task create*/
+.fieldDescription {
+  width: 100%;
+}
+.fieldDate {
+  margin-top: 15px !important;
+  width: 100%;
+}
+.fieldSelect {
+  margin-top: 15px !important;
+  width: 200px !important;
+}
+.formTask {
+  padding: 4px !important;
+  margin-bottom: 60px  !important;
+
+}
+.buttonAdd {
+  margin-top: 15px !important;
+}
+.buttonRes {
+  margin-top: 15px !important;
+  margin-left: 15px !important;
 }

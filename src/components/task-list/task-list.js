@@ -1,480 +1,449 @@
-import React, {Component} from 'react'
-import SearchPanel from '../search-panel'
-import TaskDurationFilter from '../task-duration-filter'
-import FormAddTask from '../form-add-task'
-import Spinner from '../spinner'
-import ErrorIndicator from '../error-indicator'
-import Modal from 'react-modal';
-import axios from 'axios'
-import moment from 'moment'
+import React, { Component } from "react";
+import SearchPanel from "../search-panel";
+import TaskDurationFilter from "../task-duration-filter";
+import ErrorIndicator from "../error-indicator";
+import Modal from "react-modal";
+import axios from "axios";
+import moment from "moment";
+import "./task-list.css";
+import { Button, FormControl, FormGroup } from "react-bootstrap";
+import { connect } from "react-redux";
+import _ from 'lodash';
+import {
+  loadedDays,
+  loadedTasks,
+  createTask,
+  createDay,
+  deleteTask,
+  editTask,
+  onToggleImportant} from "../../actions";
+import TaskForm from './reduxTaskForm'
 
-import './task-list.css'
-import {Button, FormControl, FormGroup} from "react-bootstrap";
 
 const customStyles = {
-  content : {
-    top                   : '50%',
-    left                  : '50%',
-    right                 : 'auto',
-    bottom                : 'auto',
-    marginRight           : '-50%',
-    transform             : 'translate(-50%, -50%)',
-    height                : 'auto',
-    width                 : 'auto'
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    height: "auto",
+    width: "auto"
   }
 };
-Modal.setAppElement('body')
+Modal.setAppElement("body");
 
-export default class TaskList extends Component {
-  constructor (props){
-    super(props)
+class TaskList extends Component {
+  constructor(props) {
+    super(props);
     this.state = {
-      days: [],
-      tasks: [],
-      term: '',
-      filter: 'all',
-      loading: false,
+      term: "",
+      filter: "all",
+      loading: true,
       error: false,
-      dateTask: '',
-      id: '',
-      date_end: '',
-      list: '',
-      subTasks: [],
-      coutCheckbox: null
-
-    }
-    this.removeTask = this.removeTask.bind(this)
-    this.addNewTask = this.addNewTask.bind(this)
-    this.onTaskClick = this.onTaskClick.bind(this)
+      dateTask: moment().format("YYYY-MM-DD"),
+      id: "",
+      date_end: "",
+      description: "",
+      weekDays: [],
+      dayId: ""
+    };
+    this.removeTask = this.removeTask.bind(this);
+    this.onTaskClick = this.onTaskClick.bind(this);
     this.openModal = this.openModal.bind(this);
-    this.openModal2 = this.openModal2.bind(this);
     this.afterOpenModal = this.afterOpenModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    this.closeModal2 = this.closeModal2.bind(this);
-  }
-  
-  addNewTask(list, date_end, duration) {
-    const {days} = this.state
-    let day_id
-    const task = {task:{ list, day_id: day_id, date_end, duration}}
-    const getDayId = days.forEach( day => {
-      if (day.date === task.task.date_end) {
-        day_id = day.id
-      }
-      return (day_id)
-    })
-    const id = day_id
-    const token = localStorage.getItem("token")
-    const config = {
-    headers: {'Authorization': "bearer " + token}
-    };
-    
-    axios.post(`http://localhost:3000/api/days/${id}/tasks`, task, config)
-         .then(response => {
-           const tasks = [...this.state.tasks, response.data]
-           this.setState({tasks})
-         })
-         .catch(error => {
-         })
-  }
-  
-  removeTask(id) {
-    const day = null
-    const token = localStorage.getItem("token")
-    const config = {
-    headers: {'Authorization': "bearer " + token}
-    };
-    axios.delete(`http://localhost:3000/api/days/${day}/tasks/`+ id, config)
-    .then(response => {
-      const tasks = this.state.tasks.filter(
-        task => task.id !== id
-      )
-      this.setState({tasks})
-    })
-    .catch(error => console.log(error))
-  }
-
-  onTaskClick(id, status, date_end){
-    let task
-
-    if (status === "in_progress")
-      {task = {task: {status: 'finished'} } }
-    else 
-      {task = {task: {status: 'in_progress'} } }
-    
-      const {days} = this.state
-    let day_id
-    const getDayId = days.forEach( day => {
-      if (day.date === date_end) {
-        day_id = day.id
-      }
-      return (day_id)
-    })
-    const dayId = day_id
-    this.setState({sliceId: dayId})
-    
-    const token = localStorage.getItem("token")
-    const config = {
-    headers: {'Authorization': "bearer " + token}
-    };
-    
-    axios.put(`http://localhost:3000/api/days/${dayId}/tasks/` + id, task, config)
-         .then(response => {
-           const newTask = response.data;
-           let { tasks } = this.state;
-           tasks.forEach(task => {
-             if (task.id === newTask.id) {
-               task.status = newTask.status;
-             }
-           })
-           this.setState({ tasks })
-         })
-         .catch(error => {
-           console.log(error)
-         })
-  }
-
-  onToggleImportant(id, importance, date_end){
-    let task
-    
-    if (importance === false)
-      {task = {task: {importance: true} } }
-    else 
-      {task = {task: {importance: false} } }
-    
-      const {days} = this.state
-    let day_id
-    const getDayId = days.forEach( day => {
-      if (day.date === date_end) {
-        day_id = day.id
-      }
-      return (day_id)
-    })
-    const dayId = day_id
-    
-    const token = localStorage.getItem("token")
-    const config = {
-    headers: {'Authorization': "bearer " + token}
-    };
-    
-    axios.put(`http://localhost:3000/api/days/${dayId}/tasks/` + id, task, config)
-         .then(response => {
-           const newTask = response.data;
-           let { tasks } = this.state;
-           tasks.forEach(task => {
-             if (task.id === newTask.id) {
-               task.importance = newTask.importance;
-             }
-           })
-           this.setState({ tasks })
-         })
-         .catch(error => {
-           console.log(error)
-         })
+    this.submit = this.submit.bind(this)
   }
 
   componentDidMount() {
-    const id = this.state.dayId;
-    const token = localStorage.getItem("token")
-    const config = {
-    headers: {'Authorization': "bearer " + token}
-    };
-    axios.get(`http://localhost:3000/api/days/${id}/tasks`, config)
-      .then(res => {
-        const tasks = res.data;
-        this.setState({tasks})
-      })
-    axios.get('http://localhost:3000/api/days', config)
-			.then(response => {
-        console.log(config)
-          this.setState({
-              days: response.data
-          })
-			})
-    this.setState({
-      loading: true,
-      error: false
+    this.props.loadedTasks();
+  }
+
+  submit(values) {
+    //create day before task if day == undefine
+    let day_id;
+    this.props.days.forEach(day => {
+      if (day.date === values.date_end) {
+        day_id = day.id;
+      }
+      return day_id;
     });
+    const day = { date: values.date_end, successful: false };
+    if (day_id == undefined) day_id = 'newDay';
+    this.props.createTask(values, day_id, day);
+  }
+
+  removeTask(id, day_id) {
+    let ids = _.filter(this.props.tasks, ['parent_id', id] )
+    this.props.deleteTask(id, day_id, _.map(ids, 'id'))
+  }
+
+  onTaskClick(id, status) {
+    let task;
+    if (status === "in_progress") {
+      task = { task: { status: "finished" } };
+    } else {
+      task = { task: { status: "in_progress" } };
+    }
+    this.props.editTask(task, id)
+  }
+
+  onToggleImportant(id, importance) {
+    let task;
+
+    if (importance === false) {
+      task = { task: { importance: true } };
+    } else {
+      task = { task: { importance: false } };
+    }
+    this.props.onToggleImportant(task, id)
   }
 
   search(tasks, term) {
-    if(term.length === 0) {
-      return tasks
+    if (term.length === 0) {
+      return tasks;
     }
-    return tasks.filter((task) =>{
-      return task.list.toLowerCase()
-       .indexOf(term.toLowerCase()) > -1
-    })
+    return tasks.filter(task => {
+      return task.description.toLowerCase().indexOf(term.toLowerCase()) > -1;
+    });
   }
 
-  onSearchChange = (term) => {
-    this.setState({term})
-  }
+  onSearchChange = term => {
+    this.setState({ term });
+  };
 
-  onFilterChange = (filter) => {
-    this.setState({filter})
+  onFilterChange = filter => {
+    this.setState({ filter });
     if (filter === "date") {
-      document.getElementById('dateFilter').style.display = 'block'
+      document.getElementById("dateFilter").style.display = "block";
+    } else {
+      document.getElementById("dateFilter").style.display = "none";
     }
-    else{
-      document.getElementById('dateFilter').style.display = 'none'
-    }
-  }
+  };
 
   filter(tasks, filter) {
-    switch(filter) {
-      case 'all':
-        return tasks
-      case 'day':
-        return this.state.tasks.filter((task)=> task.duration === 'day');
-      case 'week': 
-        return this.state.tasks.filter((task)=> task.duration === 'week');
-      case 'month': 
-        return this.state.tasks.filter((task)=> task.duration === 'month'); 
-      case 'year': 
-        return this.state.tasks.filter((task)=> task.duration === 'year'); 
-      case 'date': 
-        return this.state.tasks.filter((task)=> task.date_end === this.state.dateTask);
+    switch (filter) {
+      case "all":
+        return this.props.tasks;
+      case "day":
+        return this.props.tasks.filter(task => task.duration === "day");
+      case "week":
+        return this.props.tasks.filter(task => task.duration === "week");
+      case "month":
+        return this.props.tasks.filter(task => task.duration === "month");
+      case "year":
+        return this.props.tasks.filter(task => task.duration === "year");
+      case "date":
+        return this.props.tasks.filter(
+          task => task.date_end === this.state.dateTask
+        );
       default:
-        return tasks       
+        return tasks;
     }
   }
-  setDate = (e) => {
-    this.setState({dateTask: e.target.value})
-  }
+  setDate = e => {
+    this.setState({ dateTask: e.target.value });
+  };
 
-  openModal(e) {
-    this.setState({modalIsOpen: true});
-  }
-
-  openModal2(e) {
-    this.setState({modalIsOpen2: true});
+  openModal() {
+    this.setState({ modalIsOpen: true });
   }
 
   afterOpenModal() {
-    this.subtitle.style.color = '#fdffff';
+    this.subtitle.style.color = "#66797d";
   }
 
   closeModal() {
-    this.setState({modalIsOpen: false});
+    this.setState({ weekDays: [] });
+    this.setState({ modalIsOpen: false });
   }
 
-  closeModal2() {
-    this.setState({modalIsOpen2: false});
-  }
-  writeTaskState = (id, created_at, date_end, list) => {
-    this.setState({id: id});
-    this.setState({date_end: date_end});
-    this.setState({list: list})
-  }
-
-  writeSubTaskState = (id, day_id) => {
-    const token = localStorage.getItem("token")
-    const config = {
-      headers: {'Authorization': "bearer " + token}
-    };
-    axios.get(`http://localhost:3000/api/days/${day_id}/tasks/${id}/subtasks`, config)
-        .then(response => {
-          this.setState({
-            subTasks: response.data
-
-          })
-        })
-  }
-
+  writeTaskState = (id, date_end, description, day_id) => {
+    this.setState({ id: id });
+    this.setState({ date_end: date_end });
+    this.setState({ description: description });
+    this.setState({ dayId: day_id });
+  };
 
   handleSubmit = async event => {
     event.preventDefault();
-    let idDay = this.state.dayId
-    let idTask = this.state.id
-    let data = { subtask_list:
-      [
-        { task_id: this.state.id,
-          description: this.state.list,
-          date: this.state.date_end},
-
-        { task_id: this.state.id,
-          description: this.state.list,
-          date: moment(this.state.date_end).subtract(1, "days").format("YYYY-MM-DD")},
-
-        { task_id: this.state.id,
-          description: this.state.list,
-          date: moment(this.state.date_end).subtract(2, "days").format("YYYY-MM-DD")},
-
-        { task_id: this.state.id,
-          description: this.state.list,
-          date: moment(this.state.date_end).subtract(3, "days").format("YYYY-MM-DD")},
-
-        { task_id: this.state.id,
-          description: this.state.list,
-          date: moment(this.state.date_end).subtract(4, "days").format("YYYY-MM-DD")},
-
-        { task_id: this.state.id,
-          description: this.state.list,
-          date: moment(this.state.date_end).subtract(5, "days").format("YYYY-MM-DD")},
-
-        { task_id: this.state.id,
-          description: this.state.list,
-          date: moment(this.state.date_end).subtract(6, "days").format("YYYY-MM-DD")}
-
-  ]}
-    const token = localStorage.getItem("token")
+    const task_id = this.state.id;
+    const days = this.state.weekDays;
+    const description = this.state.description;
+    const data = { days, task_id, task: { description: description } };
+    const token = localStorage.getItem("token");
 
     const config = {
-      headers: {'Authorization': "bearer " + token}
+      headers: { Authorization: "bearer " + token }
     };
 
-    await axios.post(`http://localhost:3000/api/days/${idDay}/tasks/${idTask}/subtasks`, data, config)
-        .then(function (response) {
-          const res = response.data
-          console.log(res)
-        }).catch(function (error){
-          alert(error.message)
-        })
-    this.closeModal()
-  }
+    await axios
+      .post("http://localhost:3000/api/tasks/multi_create", data, config)
+      .then(() => {
+        this.props.loadedTasks();
+      })
+      .catch(function(error) {
+        alert(error.message);
+      });
+    this.closeModal();
+  };
 
-  setResolveSubTaskTrue = (res, task_id, id) => {
-    const token = localStorage.getItem("token")
-    const config = {
-      headers: {'Authorization': "bearer " + token}
-      };
-    const data = {subtask: {resolved: res}}
-    axios.patch(`/api/days/:day_id/tasks/${task_id}/subtasks/${id}`, data, config)
-    .then(function (response) {
-      const day = response.data
-      console.log(day)
-    }).catch(function (error){
-        alert(error.message)
-    })
+  setDay = day => {
+    const days = [...this.state.weekDays, day];
+    this.setState({ weekDays: days });
+  };
+  removeDay = day => {
+    const days = this.state.weekDays.filter(item => item !== day);
+    this.setState({ weekDays: days });
+  };
 
-  } 
+  setDescription = e => {
+    this.setState({ description: e.target.value });
+  };
 
   render() {
-    var currentCount = 0;
-    let coutCheckbox = 0;
-    const {tasks, term, filter, loading, error, subTasks} = this.state
-    const spinner = !loading ? <Spinner /> : null;
-    const errorMessage = error ? <ErrorIndicator/> : null;
-    const visibleItem = this.search(this.filter(tasks, filter),term)
+    const { term, filter, error } = this.state;
+    const errorMessage = error ? <ErrorIndicator /> : null;
+    const visibleItem = this.search(
+      this.filter(this.props.tasks, filter),
+      term
+    );
     return (
-    <div>
-      <Modal
+      <div className="task-container">
+        <h4>Task count: {this.props.tasks.length}</h4>
+        <Modal
           isOpen={this.state.modalIsOpen}
           onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
           style={customStyles}
-          contentLabel="Modal">
-
-        <span onClick={this.closeModal}><span className="close warp black"></span></span>
-        <h2 ref={subtitle => this.subtitle = subtitle}>Slice task</h2>
-        <div>Task</div>
-        <div className="editTask">
-          <form onSubmit={this.handleSubmit}>
-            <FormGroup>
-              <FormControl
+          contentLabel="Modal"
+        >
+          <span onClick={this.closeModal}>
+            <i className="fa fa-times fa-2x btnCloseModal" aria-hidden="true"></i>
+          </span>
+          <h2 ref={subtitle => (this.subtitle = subtitle)}>Slice task</h2>
+          <div>Task</div>
+          <div className="editTask">
+            <form onSubmit={this.handleSubmit}>
+              <FormGroup>
+                <FormControl
                   autoFocus
-                  id="list"
+                  id="description"
                   type="text"
                   key={this.state.id}
-                  value={this.state.list}
-                  onChange={this.setReport}
-              />
-            </FormGroup>
-            <Button
-                block
-                type="submit">
-              Slice subtask
-            </Button>
-          </form>
-        </div>
-      </Modal>
-      {/*modal sub task*/}
-      <Modal
-          isOpen={this.state.modalIsOpen2}
-          onRequestClose={this.closeModal2}
-          style={customStyles}
-          contentLabel="Modal">
-        <span onClick={this.closeModal2}><span className="close warp black"></span></span>
-        <h2 ref={subtitle => this.subtitle = subtitle}>SubTask</h2>
-        <div>SubTask</div>
-        <div className="subTask">
-        <form>
-          {subTasks.map (subtask =>{
-            function makeCounter() {
-              currentCount = currentCount + 1;
-              return currentCount;
-            }
-            return(
-              <div key={subtask.id}>
-                <label
-                   className={subtask.resolved === true ? 'finish' : ''}>
-                    Task: {subtask.description}, {moment(subtask.date).format("ddd DD-MMMM")}
-
-                  <input
+                  defaultValue={this.state.description}
+                  onChange={this.setDescription}
+                />
+                <fieldset>
+                  <legend>Days:</legend>
+                  <label className="checkBoxDays" key="1">
+                    <input
                       type="checkbox"
-                      id={makeCounter()}
-                      key={subtask.id}
-                      value={subtask.resolved}
-                      className={subtask.resolved === true ? 'checkDone' : 'checkNot'}
-                      
-                      onChange={(e) =>{ 
-                        let res = e.target.checked 
-                        this.setResolveSubTaskTrue(res, subtask.task_id, subtask.id)}} />
-                </label>
-              </div>
-            )
-          })}
-          <Button
-              block
-              type="submit">
-            Set
-          </Button>
-        </form>
-        </div>
-      </Modal>
-       <TaskDurationFilter 
-       filter={filter}
-       onFilterChange={this.onFilterChange}/> 
-      <SearchPanel onSearchChange={this.onSearchChange}/>
-       <input type="date"
-                autoFocus
-                id="dateFilter"
-                onChange={this.setDate}
-                className="form-control dateFilter"/>   
-      {spinner}
-      {errorMessage}
-      {visibleItem.map(task => {
-        return(
-         <div key={task.id}>
-          <li className={"list-group-item point " + (task.importance === false ? '' : 'importance')}>
-            <span
-                onClick={() => this.onTaskClick(task.id, task.status, task.date_end)}
-                className = {task.status === "in_progress" ? '' : 'finish'}>
-                {task.list}</span>
-            <span className="date-task">{moment(task.date_end).format("ll")}
-               <button type="button"
-                    className="btn btn-outline-success btn-sm float-right"
-                    onClick={() => this.onToggleImportant(task.id, task.importance, task.date_end)}
-                    >
-                  <i className="fa fa-exclamation" />
-                </button>
-                <button className="btn btn-outline-danger btn-sm float-right"
-                        onClick ={()=> {if (window.confirm('Are you sure ?'))this.removeTask(task.id) }}>
-                        <i className="fa fa-trash"/></button>
-                <button className={task.duration === "week" ? 'btn btn-outline-warning btn-sm ' : 'durationSlice'}
-                        onClick={()=>{ this.openModal();
-                        this.writeTaskState(task.id, task.created_at, task.date_end, task.list, task.day_id);}}>
-                        <i className="fa fa-scissors"/></button>
-                <button className={task.duration === "week" ? 'btn btn-outline-info btn-sm ' : 'durationSlice'}
-                        onClick={()=>{ this.openModal2();
-                        this.writeSubTaskState(task.id, task.day_id, task.date_end, task.list);}}>
-                      <i className="fa fa-list-ol"/></button>
-              </span>
-          </li>
-        </div>)
-      })}
-        <FormAddTask onNewTask={this.addNewTask} />
-    </div>   
-    )}
+                      className="checkBoxDays"
+                      name="1"
+                      onChange={e => {
+                        const res = e.target.checked;
+                        const day = e.currentTarget.name;
+                        if (res === true) this.setDay(day);
+                        else this.removeDay(day);
+                      }}
+                    />
+                    Monday
+                  </label>
+                  <label className="checkBoxDays" key="2">
+                    <input
+                      type="checkbox"
+                      className="checkBoxDays"
+                      name="2"
+                      onChange={e => {
+                        const res = e.target.checked;
+                        const day = e.currentTarget.name;
+                        if (res === true) this.setDay(day);
+                        else this.removeDay(day);
+                      }}
+                    />
+                    Tuesday
+                  </label>
+                  <label className="checkBoxDays" key="3">
+                    <input
+                      type="checkbox"
+                      className="checkBoxDays"
+                      name="3"
+                      onChange={e => {
+                        const res = e.target.checked;
+                        const day = e.currentTarget.name;
+                        if (res === true) this.setDay(day);
+                        else this.removeDay(day);
+                      }}
+                    />
+                    Wednesday
+                  </label>
+                  <label className="checkBoxDays" key="4">
+                    <input
+                      type="checkbox"
+                      className="checkBoxDays"
+                      name="4"
+                      onChange={e => {
+                        const res = e.target.checked;
+                        const day = e.currentTarget.name;
+                        if (res === true) this.setDay(day);
+                        else this.removeDay(day);
+                      }}
+                    />
+                    Thursday
+                  </label>
+                  <label className="checkBoxDays" key="5">
+                    <input
+                      type="checkbox"
+                      className="checkBoxDays"
+                      name="5"
+                      onChange={e => {
+                        const res = e.target.checked;
+                        const day = e.currentTarget.name;
+                        if (res === true) this.setDay(day);
+                        else this.removeDay(day);
+                      }}
+                    />
+                    Friday
+                  </label>
+
+                  <label className="checkBoxDays" key="6">
+                    <input
+                      type="checkbox"
+                      className="checkBoxDays"
+                      name="6"
+                      onChange={e => {
+                        const res = e.target.checked;
+                        const day = e.currentTarget.name;
+                        if (res === true) this.setDay(day);
+                        else this.removeDay(day);
+                      }}
+                    />
+                    Saturday
+                  </label>
+                  <label className="checkBoxDays" key="7">
+                    <input
+                      type="checkbox"
+                      className="checkBoxDays"
+                      name="0"
+                      onChange={e => {
+                        const res = e.target.checked;
+                        const day = e.currentTarget.name;
+                        if (res === true) this.setDay(day);
+                        else this.removeDay(day);
+                      }}
+                    />
+                    Sunday
+                  </label>
+                </fieldset>
+              </FormGroup>
+              <Button block type="submit">
+                Slice task
+              </Button>
+            </form>
+          </div>
+        </Modal>
+        <TaskDurationFilter
+          filter={filter}
+          onFilterChange={this.onFilterChange}
+        />
+        <SearchPanel onSearchChange={this.onSearchChange} />
+        <input
+          type="date"
+          autoFocus
+          id="dateFilter"
+          defaultValue={moment().format("YYYY-MM-DD")}
+          onChange={this.setDate}
+          className="form-control dateFilter"
+        />
+        {errorMessage}
+
+        {visibleItem.map(task => {
+          return (
+            <div key={task.id}>
+              <li
+                className={
+                  "list-group-item point " +
+                  (task.importance === false ? "" : "importance")
+                }
+              >
+                <span
+                  onClick={() =>
+                    this.onTaskClick(task.id, task.status)
+                  }
+                  className={task.status === "in_progress" ? "" : "finish"}
+                >
+                  {task.description}
+                </span>
+                <span className="date-task">
+                  {moment(task.date_end).format("ll")}
+                  <button
+                    type="button"
+                    className="btn btn-outline-success btn-sm float-right bt-group"
+                    onClick={() =>
+                      this.onToggleImportant(
+                        task.id,
+                        task.importance,
+                        task.date_end
+                      )
+                    }
+                  >
+                    <i className="fa fa-exclamation" />
+                  </button>
+                  <button
+                    className="btn btn-outline-danger btn-sm float-right bt-group"
+                    onClick={() => {
+                      if (window.confirm("Are you sure ?"))
+                        this.removeTask(task.id, task.day_id);
+                    }}
+                  >
+                    <i className="fa fa-trash" />
+                  </button>
+                  <button
+                    className={
+                      task.duration === "week"
+                        ? "btn btn-outline-warning btn-sm bt-group"
+                        : "durationSlice"
+                    }
+                    onClick={() => {
+                      this.openModal();
+                      this.writeTaskState(
+                        task.id,
+                        task.date_end,
+                        task.description,
+                        task.day_id
+                      );
+                    }}
+                  >
+                    <i className="fa fa-scissors" />
+                  </button>
+                </span>
+              </li>
+            </div>
+          );
+        })}
+        <TaskForm  onSubmit={this.submit} />
+      </div>
+    );
+  }
 }
+const mapStateToProps = ({ days, tasks }) => {
+  return {
+    tasks: Object.values(tasks.tasks),
+    days: days.days
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  { loadedTasks,
+    loadedDays,
+    createTask,
+    createDay,
+    deleteTask,
+    editTask,
+    onToggleImportant
+  }
+)(TaskList);

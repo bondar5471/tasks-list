@@ -3,10 +3,9 @@ import ReactGoogleAuth from 'react-google-auth';
 import Spinner from '../spinner'
 
 function Example(props) {
-    console.log("gapi exists");
     return <div>
         <h1>App goes here</h1>
-        <button onClick={props.onSignOutClick}>Sign out</button>
+        <button onClick={ props.onSignOutClick }>Sign out</button>
     </div>;
 }
 
@@ -23,15 +22,15 @@ function SignIn(props) {
         return <div className="Text Text-strong">Error!</div>;
     }
     return <div>
-        <button className="Button Button-primary" onClick={props.onSignInClick}>Sign in</button>
+        <button className="Button Button-primary" onClick={ props.onSignInClick }>Sign in</button>
         {props.signingIn && <div>Signing in...</div>}
     </div>;
 }
 
 export default ReactGoogleAuth({
-    clientId: "606987251303-nlhggcck2jq7cl2onjuu2i5fs8hirm3d.apps.googleusercontent.com",
-    discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+    clientId: '606987251303-nlhggcck2jq7cl2onjuu2i5fs8hirm3d.apps.googleusercontent.com',
+    discoveryDocs: [ 'https://sheets.googleapis.com/$discovery/rest?version=v4' ],
     loader: Loader,
-    scope: "https://www.googleapis.com/auth/spreadsheets",
+    scope: 'https://www.googleapis.com/auth/spreadsheets',
     signIn: SignIn
 })(Example);

@@ -41,7 +41,8 @@
 }
 
 .lds-css {
-  padding-right: 50%;
+  margin-left: 47%;
+
 }
 
 .lds-double-ring {
@@ -53,9 +54,11 @@
   height: 160px;
   top: 20px;
   left: 20px;
+  margin-left: auto;
+  margin-right: auto;
   border-radius: 50%;
   border: 8px solid #000;
-  border-color: #3d7ec0 transparent #3d7ec0 transparent;
+  border-color: #44a340 transparent #44a340 transparent;
   -webkit-animation: lds-double-ring 1.5s linear infinite;
   animation: lds-double-ring 1.5s linear infinite;
 }
