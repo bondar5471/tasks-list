@@ -1,6 +1,6 @@
 import React from 'react';
 import  renderer from 'react-test-renderer'
-import Enzyme, {mount, shallow} from 'enzyme';
+import Enzyme, { mount, shallow, render } from 'enzyme';
 import enzymeAdapterReact16 from 'enzyme-adapter-react-16';
 import FormAddTask from '../../src/components/form-add-task/form-add-task';
 import  utils from './utils'
@@ -17,57 +17,63 @@ it('renders without crashing', () => {
 });
 
 Enzyme.configure({ adapter: new enzymeAdapterReact16() });
-it("check datepicker displayed", () => {
+it('check datepicker displayed', () => {
   const DateInputComponent = mount(<FormAddTask />).find(
-      "#date"
+      '#date'
   );
-  expect(DateInputComponent.hasClass("form-control date")).toEqual(
+  expect(DateInputComponent.hasClass('form-control date')).toEqual(
       true
   );
 });
 
-it("check task field displayed", () => {
+it('check task field displayed', () => {
   const TaskInputComponent = mount(<FormAddTask />).find(
-      "#task"
+      '#task'
   );
-  expect(TaskInputComponent.hasClass("form-control task")).toEqual(
+  expect(TaskInputComponent.hasClass('form-control task')).toEqual(
       true
   );
 });
 
-it("check task duration selector field displayed", () => {
+it('check task duration selector field displayed', () => {
   const TaskDurInputComponent = mount(<FormAddTask />).find(
-      "#sel1"
+      '#sel1'
   );
-  expect(TaskDurInputComponent.hasClass("form-control")).toEqual(
+  expect(TaskDurInputComponent.hasClass('form-control')).toEqual(
       true
   );
 });
 
-it("render date input correctly with null value", () => {
+it('render date input correctly with null value', () => {
   const props = {
           value: null
       },
-      DateInputComponent = mount(<FormAddTask {...props} />).find(
-          "#date"
+      DateInputComponent = mount(<FormAddTask { ...props } />).find(
+          '#date'
       );
-  expect(DateInputComponent.prop("value")).toEqual(undefined);
+  expect(DateInputComponent.prop('value')).toEqual(undefined);
 });
 
-describe("Task #2 - add task", () => {
+describe('Task #2 - add task', () => {
 
     it('is possible to add task', () => {
         const component = mount(<FormAddTask/>);
-        let fieldTask = component.find('#task');
+        const fieldTask = component.find('#task');
         fieldTask.value = 'Task';
-        let dateTask = component.find('#date');
-        dateTask.value = "2019-03-08";
-        let durationTask = component.find('#sel1');
-        durationTask.value = "day";
-        let addTaskButton = component.find("#addTask");
+        const dateTask = component.find('#date');
+        dateTask.value = '2019-03-08';
+        const durationTask = component.find('#sel1');
+        durationTask.value = 'day';
+        const addTaskButton = component.find('#addTask');
         addTaskButton.simulate('click');
         expect(utils.authorize()).toBe('token');
-        expect(addTaskButton.length).toEqual(1);
+        expect(addTaskButton).toHaveLength(1);
         expect(component).toMatchSnapshot();
     });
+
+    it('check validation form', ()=>{
+      const component = mount(<FormAddTask/>)
+      const form = component.find('form')
+      expect(form.instance().noValidate).toBe(false)
+    })
 })

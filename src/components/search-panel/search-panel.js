@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 
 import './search-panel.css'
 
@@ -8,7 +8,7 @@ export default class SearchPanel extends Component {
   };
 
   onTermChange = (e) => {
-    const {onSearchChange = () =>{}} = this.props
+    const { onSearchChange = () =>{} } = this.props
     this.setState({
       term: e.target.value
     });
@@ -16,13 +16,13 @@ export default class SearchPanel extends Component {
   }
   render() {
     return (
-      <input
+        <input
         type="text"
         className="form-control search-panel"
         placeholder="Type to search"
-        value={this.state.term}
-        onChange={this.onTermChange}>
-      </input>
+        value={ this.state.term }
+        onChange={ this.onTermChange }>
+        </input>
     )
   }
 }
